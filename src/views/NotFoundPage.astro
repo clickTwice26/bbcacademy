@@ -1,0 +1,58 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Icon from '~/components/Icon.astro';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+import type { UIKey } from '~/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const links: { key: UIKey; path: string }[] = [
+  { key: 'nav.home', path: '/' },
+  { key: 'nav.about', path: '/about/' },
+  { key: 'nav.heritage', path: '/heritage/' },
+  { key: 'nav.projects', path: '/projects/' },
+  { key: 'nav.visit', path: '/visit/' },
+];
+---
+
+<BaseLayout lang={lang} title={t(lang, 'notFound.metaTitle')} description={t(lang, 'notFound.text')} noindex>
+  <section class="section not-found">
+    <div class="container-narrow">
+      <p class="code" aria-hidden="true">404</p>
+      <h1>{t(lang, 'notFound.title')}</h1>
+      <p class="lead">{t(lang, 'notFound.text')}</p>
+      <ul role="list">
+        {
+          links.map((link) => (
+            <li>
+              <a class="link-arrow" href={localizePath(link.path, lang)}>
+                {t(lang, link.key)}
+                <Icon name="arrow-right" size={18} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found .container-narrow {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .code {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 3rem + 6vw, 8rem);
+    line-height: 1;
+    color: var(--sand-deep);
+  }
+  ul {
+    display: grid;
+    gap: var(--space-s);
+  }
+</style>

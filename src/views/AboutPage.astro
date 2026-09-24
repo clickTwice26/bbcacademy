@@ -1,0 +1,323 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Prose from '~/components/Prose.astro';
+import Timeline from '~/components/Timeline.astro';
+import Icon from '~/components/Icon.astro';
+import SectionHead from '~/components/SectionHead.astro';
+import LightboxLink from '~/components/LightboxLink.astro';
+import Lightbox from '~/components/Lightbox.astro';
+import { site } from '~/config/site';
+import { aims, publications } from '~/data/about';
+import { academyTimeline } from '~/data/timeline';
+import { projects } from '~/data/projects';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+import { formatYear } from '~/lib/format';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const plot1 = projects.filter((p) => p.plot === 1);
+const plot2 = projects.filter((p) => p.plot === 2);
+
+const facts = [
+  { label: t(lang, 'about.factFounded'), value: t(lang, 'about.factFoundedValue', { year: formatYear(site.founded, lang) }) },
+  { label: t(lang, 'about.factRegistration'), value: t(lang, 'about.factRegistrationValue', { reg: site.registration }) },
+  { label: t(lang, 'about.factLand'), value: t(lang, 'about.factLandValue') },
+  { label: t(lang, 'about.factLocation'), value: t(lang, 'about.factLocationValue') },
+];
+---
+
+<BaseLayout lang={lang} title={t(lang, 'about.metaTitle')} description={t(lang, 'about.metaDescription')}>
+  <PageHeader
+    lang={lang}
+    title={t(lang, 'about.title')}
+    lead={t(lang, 'about.lead')}
+    image="projects/new-salban-vihara/vihara-building.jpg"
+  />
+
+  <section class="section-tight">
+    <div class="container intro-grid">
+      <Prose id="about-intro" lang={lang} />
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section band-sand" aria-labelledby="history">
+    <div class="container history-grid">
+      <div>
+        <h2 id="history">{t(lang, 'about.historyTitle')}</h2>
+        <Prose id="about-history" lang={lang} class="history-prose" />
+      </div>
+      <aside class="history-aside" aria-labelledby="milestones">
+        <h3 id="milestones">{t(lang, 'about.timelineTitle')}</h3>
+        <Timeline items={academyTimeline} lang={lang} />
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="campus">
+    <div class="container">
+      <SectionHead id="campus" title={t(lang, 'about.campusTitle')} lead={t(lang, 'about.campusLead')} />
+      <Prose id="about-campus" lang={lang} class="campus-prose" />
+      <div class="plots">
+        <div class="plot">
+          <h3>{t(lang, 'about.plot1')}</h3>
+          <ol role="list">
+            {
+              plot1.map((p) => (
+                <li>
+                  <Icon name={p.icon} size={22} />
+                  {p.detail ? <a href={localizePath(`/projects/${p.slug}/`, lang)}>{p.title[lang]}</a> : <span>{p.title[lang]}</span>}
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <div class="plot plot-planned">
+          <h3>{t(lang, 'about.plot2')}</h3>
+          <ol role="list">
+            {
+              plot2.map((p) => (
+                <li>
+                  <Icon name={p.icon} size={22} />
+                  <a href={localizePath(`/projects/${p.slug}/`, lang)}>{p.title[lang]}</a>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight visitors" aria-labelledby="visitors">
+    <div class="container-narrow">
+      <h2 id="visitors">{t(lang, 'about.visitorsTitle')}</h2>
+      <Prose id="about-visitors" lang={lang} class="visitors-prose" />
+    </div>
+  </section>
+
+  <section class="section band-sand" aria-labelledby="aims">
+    <div class="container">
+      <SectionHead id="aims" title={t(lang, 'about.aimsTitle')} />
+      <ol class="aims" role="list">
+        {
+          aims.map((aim, i) => (
+            <li class="reveal" style={`--reveal-i: ${i % 2}`}>
+              <span class="aim-icon" aria-hidden="true">
+                <Icon name={aim.icon} size={26} />
+              </span>
+              <p>{aim.text[lang]}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="publications">
+    <div class="container">
+      <SectionHead id="publications" title={t(lang, 'about.publicationsTitle')} lead={t(lang, 'about.publicationsLead')} />
+      <ul class="pubs" role="list" data-pswp-gallery>
+        {
+          publications.map((pub) => (
+            <li>
+              <LightboxLink src={pub.image} lang={lang} ratio="1 / 1" width={360} sizes="(min-width: 900px) 30vw, 45vw" class="pub-cover" />
+              <p class="pub-title">{pub.title[lang]}</p>
+              <p class="pub-publisher">{pub.publisher[lang]}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<style>
+  .intro-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .facts {
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    border: 1px solid var(--sand-deep);
+    border-radius: var(--r-md);
+    background: #fffdf8;
+  }
+  .facts div {
+    display: grid;
+    gap: 0.15rem;
+    padding-bottom: var(--space-m);
+    border-bottom: 1px solid var(--line);
+  }
+  .facts div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .facts dt {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--leaf);
+  }
+  .facts dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--ink);
+    line-height: 1.35;
+  }
+  @media (min-width: 900px) {
+    .intro-grid {
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-3xl);
+    }
+    .facts {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-l));
+    }
+  }
+
+  .history-grid {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .history-grid :global(.history-prose) {
+    margin-top: var(--space-l);
+  }
+  .history-aside h3 {
+    margin-bottom: var(--space-l);
+  }
+  @media (min-width: 1000px) {
+    .history-grid {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-3xl);
+    }
+    .history-aside {
+      padding-top: calc(var(--step-3) * 1.12 + var(--space-l));
+    }
+  }
+
+  .container :global(.campus-prose) {
+    margin-bottom: var(--space-2xl);
+  }
+  .plots {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .plot {
+    padding: var(--space-l);
+    border-radius: var(--r-md);
+    border: 1px solid var(--sand-deep);
+  }
+  .plot-planned {
+    border-style: dashed;
+    border-color: var(--terracotta);
+  }
+  .plot h3 {
+    margin-bottom: var(--space-m);
+  }
+  .plot ol {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .plot li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  .plot li :global(.icon) {
+    color: var(--terracotta);
+  }
+  .plot li span {
+    color: var(--ink-soft);
+  }
+  @media (min-width: 800px) {
+    .plots {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .visitors {
+    border-top: 1px solid var(--line);
+  }
+  .visitors :global(.visitors-prose) {
+    margin-top: var(--space-m);
+    font-size: var(--step-1);
+  }
+
+  .aims {
+    display: grid;
+    gap: var(--space-xl) var(--space-2xl);
+  }
+  .aims li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-m);
+    align-items: start;
+  }
+  .aim-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--ivory);
+    border: 1px solid var(--sand-deep);
+    color: var(--terracotta);
+  }
+  .aims p {
+    padding-top: 0.6rem;
+  }
+  @media (min-width: 800px) {
+    .aims {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .pubs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl) var(--space-l);
+  }
+  .pubs :global(.pub-cover .frame) {
+    background: #f6efe3;
+  }
+  .pubs :global(.pub-cover img) {
+    object-fit: contain !important;
+    padding: 6%;
+  }
+  .pub-title {
+    margin-top: var(--space-s);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 560;
+    color: var(--terracotta);
+  }
+  .pub-publisher {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  @media (min-width: 900px) {
+    .pubs {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

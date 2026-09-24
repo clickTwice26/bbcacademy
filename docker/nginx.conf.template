@@ -1,0 +1,67 @@
+# nginx for the static site built by Astro (see Dockerfile).
+# The image's entrypoint renders this file into /etc/nginx/conf.d/default.conf at start-up,
+# substituting only ${PORT} (NGINX_ENVSUBST_FILTER), so nginx's own $variables are untouched.
+
+# Cubicle's instant link (https://cubicle.shagato.space/<token>/) strips /<token> and sends it
+# as X-Forwarded-Prefix. Accept a single plain path segment only; anything else is ignored.
+map $http_x_forwarded_prefix $fwd_prefix {
+    default "";
+    "~^/[A-Za-z0-9._~-]+$" $http_x_forwarded_prefix;
+}
+
+# Files under /_astro/ carry a content hash in their name, so they can be cached for good.
+map $uri $cache_control {
+    ~^/_astro/ "public, max-age=31536000, immutable";
+    default    "no-cache";
+}
+
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    server_tokens off;
+    # TLS ends at Cubicle's proxy: send relative Location headers, never http://host:port/.
+    absolute_redirect off;
+    charset utf-8;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/css application/javascript application/json application/xml text/xml text/plain image/svg+xml;
+
+    add_header Cache-Control $cache_control;
+    add_header X-Content-Type-Options nosniff;
+    add_header Referrer-Policy strict-origin-when-cross-origin;
+
+    # Health check for Cubicle: answered by nginx itself, no file access.
+    location = /healthz {
+        access_log off;
+        add_header Cache-Control "no-store";
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        # Every page is a directory index (Astro trailingSlash: 'always'): /about -> /about/,
+        # keeping the instant-link prefix when there is one. The capture is named because
+        # evaluating the $fwd_prefix map runs its own regex, which resets $1.
+        if (-d $request_filename) {
+            rewrite ^(?<dir_path>.*[^/])$ $fwd_prefix$dir_path/ permanent;
+        }
+        try_files $uri $uri/ =404;
+
+        # Under an instant link, send root-relative URLs back through the prefix. Without a
+        # prefix each replacement equals its original, so responses are unchanged.
+        sub_filter_types text/css;
+        sub_filter_once off;
+        sub_filter 'href="/' 'href="$fwd_prefix/';
+        sub_filter 'src="/' 'src="$fwd_prefix/';
+        sub_filter 'srcset="/' 'srcset="$fwd_prefix/';
+        sub_filter ', /_astro/' ', $fwd_prefix/_astro/';
+        sub_filter 'url(/_astro/' 'url($fwd_prefix/_astro/';
+    }
+
+    error_page 404 /404.html;
+}

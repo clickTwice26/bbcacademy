@@ -1,0 +1,53 @@
+---
+import Icon from './Icon.astro';
+import { alternatePath, t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+
+const { lang, class: className } = Astro.props;
+const target: Lang = lang === 'en' ? 'bn' : 'en';
+const href = alternatePath(Astro.url.pathname, target);
+---
+
+<a
+  class:list={['lang-switch', className]}
+  href={href}
+  hreflang={target}
+  lang={target}
+  title={t(lang, 'lang.switchTitle')}
+>
+  <Icon name="translate" size={18} />
+  <span class:list={[target === 'bn' && 'bn-inline']}>{t(lang, 'lang.switchLabel')}</span>
+</a>
+
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: var(--step--1);
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+  .lang-switch:hover {
+    border-color: var(--terracotta);
+    background: var(--sand);
+    color: var(--ink);
+  }
+  .lang-switch :global(.icon) {
+    color: var(--terracotta);
+  }
+</style>

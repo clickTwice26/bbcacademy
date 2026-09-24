@@ -1,0 +1,30 @@
+/* Bangla typography. Bengali conjuncts and vowel signs need more vertical room,
+   break under letter-spacing, and have no true italic. */
+:lang(bn) {
+  --step-0: 1.125rem;
+  --step-1: 1.25rem;
+  letter-spacing: 0;
+}
+html:lang(bn) body {
+  line-height: 1.8;
+}
+:lang(bn) :is(h1, h2, h3, h4) {
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+:lang(bn) :is(em, i, cite) {
+  font-style: normal;
+  font-weight: 600;
+}
+:lang(bn) .lead {
+  line-height: 1.75;
+}
+:lang(bn) .btn {
+  line-height: 1.4;
+  padding-block: 0.55rem;
+}
+/* English words inside Bangla pages keep English metrics. */
+:lang(bn) :lang(en) {
+  letter-spacing: normal;
+}

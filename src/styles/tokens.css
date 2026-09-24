@@ -1,0 +1,56 @@
+/* Heritage Terracotta design tokens.
+   Palette taken from the Salban Vihara brickwork and the BBCA emblem (terracotta),
+   monks' robes (saffron) and the Bodhi tree (leaf). */
+:root {
+  color-scheme: light;
+
+  --ivory: #fbf6ee;
+  --sand: #f3e9da;
+  --sand-deep: #e6d5bc;
+  --terracotta: #9a3b22;       /* 6.5:1 on ivory: headings, links, buttons */
+  --terracotta-deep: #6e2716;  /* hover / pressed */
+  --saffron: #d8962b;          /* decorative only on light backgrounds (2.4:1) */
+  --leaf: #2f5a3c;             /* secondary accent, focus rings (7.4:1) */
+  --ink: #2b1d16;              /* body text */
+  --ink-soft: #5a4638;         /* secondary text (8.3:1) */
+  --line: rgb(43 29 22 / 0.14);
+
+  --font-display: 'Fraunces Variable', 'Noto Serif Bengali', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* For short Bengali snippets on English pages, so no Bengali webfont is downloaded. */
+  --font-system: system-ui, -apple-system, 'Segoe UI', 'Noto Sans Bengali', 'Nirmala UI', sans-serif;
+
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.1875rem;
+  --step-2: clamp(1.35rem, 1.2rem + 0.6vw, 1.625rem);
+  --step-3: clamp(1.7rem, 1.35rem + 1.4vw, 2.35rem);
+  --step-4: clamp(2.1rem, 1.55rem + 2.4vw, 3.25rem);
+  --step-5: clamp(2.5rem, 1.7rem + 3.4vw, 4.1rem);
+
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.75rem;
+  --space-m: 1rem;
+  --space-l: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  --section: clamp(4rem, 3rem + 4vw, 7rem);
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --container: 1200px;
+  --measure: 65ch;
+
+  /* Shape rule: interactive elements are pills, images and panels use --r-md,
+     featured images use the vihara arch. */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-pill: 999px;
+  --r-arch: 999px 999px var(--r-md) var(--r-md);
+
+  --shadow-soft: 0 1px 2px rgb(110 39 22 / 0.06), 0 10px 30px rgb(110 39 22 / 0.09);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --header-h: 72px;
+  --z-header: 50;
+}

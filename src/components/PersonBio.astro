@@ -1,0 +1,94 @@
+---
+import Photo from './Photo.astro';
+import Prose from './Prose.astro';
+import type { Person } from '~/data/people';
+import type { Lang } from '~/i18n/utils';
+
+interface Props {
+  person: Person;
+  lang: Lang;
+}
+
+const { person, lang } = Astro.props;
+---
+
+<article class:list={['person', person.wide && 'is-wide']} id={person.id}>
+  <div class="person-photo">
+    {
+      person.wide ? (
+        <Photo src={person.portrait} lang={lang} ratio="16 / 11" sizes="(min-width: 900px) 560px, 92vw" width={680} />
+      ) : (
+        <Photo src={person.portrait} lang={lang} shape="arch" ratio="4 / 5" position="top" sizes="(min-width: 900px) 300px, 70vw" width={360} />
+      )
+    }
+  </div>
+  <div class="person-body">
+    <p class="person-role">{person.role[lang]}</p>
+    <h3 class="person-name">{person.name[lang]}</h3>
+    {person.years && <p class="person-years">{person.years[lang]}</p>}
+    <Prose collection="people" id={person.id} lang={lang} class="person-bio" />
+  </div>
+</article>
+
+<style>
+  .person {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+    border-top: 1px solid var(--line);
+  }
+  .person:first-of-type {
+    border-top: 0;
+  }
+  .person-photo {
+    width: min(100%, 300px);
+  }
+  .is-wide .person-photo {
+    width: min(100%, 560px);
+  }
+  .person-role {
+    color: var(--leaf);
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: 0.02em;
+  }
+  .person-name {
+    margin-top: var(--space-2xs);
+    font-size: var(--step-3);
+  }
+  .person-years {
+    margin-top: var(--space-2xs);
+    color: var(--ink-soft);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+  }
+  .person-body :global(.person-bio) {
+    margin-top: var(--space-l);
+  }
+  @media (min-width: 900px) {
+    .person {
+      grid-template-columns: 300px 1fr;
+      gap: var(--space-3xl);
+      align-items: start;
+    }
+    .person-photo {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-l));
+    }
+    .is-wide {
+      grid-template-columns: 1fr;
+    }
+    .is-wide .person-photo {
+      position: static;
+    }
+  }
+  @media (min-width: 1100px) {
+    .is-wide {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+    .is-wide .person-photo {
+      position: sticky;
+    }
+  }
+</style>

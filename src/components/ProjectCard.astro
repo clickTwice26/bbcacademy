@@ -1,0 +1,103 @@
+---
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import type { Project } from '~/data/projects';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+  /** Heading level inside the card. */
+  level?: 2 | 3;
+  ratio?: string;
+  sizes?: string;
+  class?: string;
+  showStatus?: boolean;
+}
+
+const { project, lang, level = 3, ratio = '4 / 3', sizes = '(min-width: 900px) 33vw, 92vw', class: className, showStatus = true } = Astro.props;
+const Heading = `h${level}` as 'h2' | 'h3';
+const href = project.detail ? localizePath(`/projects/${project.slug}/`, lang) : undefined;
+const Tag = href ? 'a' : 'div';
+// Concept images are not photos of the real place, so cards show the project icon instead.
+---
+
+<Tag class:list={['project-card', !href && 'is-static', className]} href={href}>
+  {
+    project.cover && project.coverNote !== 'concept' ? (
+      <Photo src={project.cover} lang={lang} ratio={ratio} sizes={sizes} width={1200} class="project-card-photo" />
+    ) : (
+      <div class="project-card-icon" style={`aspect-ratio: ${ratio}`} aria-hidden="true">
+        <Icon name={project.icon} size={56} />
+      </div>
+    )
+  }
+  <div class="project-card-body">
+    {
+      showStatus && (
+        <span class:list={['badge', project.status === 'running' ? 'badge-running' : 'badge-proposed']}>
+          {t(lang, project.status === 'running' ? 'status.running' : 'status.proposed')}
+        </span>
+      )
+    }
+    <Heading class="project-card-title">{project.title[lang]}</Heading>
+    <p class="project-card-summary">{project.summary ? project.summary[lang] : t(lang, 'status.noPage')}</p>
+    {
+      href && (
+        <span class="link-arrow project-card-link">
+          {t(lang, 'common.viewProject')}
+          <Icon name="arrow-right" size={18} />
+        </span>
+      )
+    }
+  </div>
+</Tag>
+
+<style>
+  .project-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--space-m);
+    color: inherit;
+    text-decoration: none;
+  }
+  .project-card-body {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-xs);
+  }
+  .project-card-title {
+    font-size: var(--step-2);
+    transition: color 0.2s var(--ease);
+  }
+  .project-card-summary {
+    color: var(--ink-soft);
+  }
+  .project-card-link {
+    margin-top: var(--space-2xs);
+    color: var(--terracotta);
+  }
+  .project-card :global(.project-card-photo img) {
+    transition: transform 0.7s var(--ease);
+  }
+  a.project-card:hover :global(.project-card-photo img) {
+    transform: scale(1.04);
+  }
+  a.project-card:hover .project-card-title {
+    color: var(--terracotta-deep);
+  }
+  a.project-card:hover :global(.link-arrow .icon) {
+    transform: translateX(4px);
+  }
+  .project-card-icon {
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-md);
+    color: var(--terracotta);
+    background:
+      radial-gradient(circle at 50% 50%, rgb(216 150 43 / 0.18) 0 34%, transparent 35%),
+      repeating-radial-gradient(circle at 50% 50%, transparent 0 22px, rgb(154 59 34 / 0.06) 22px 23px),
+      var(--sand);
+  }
+</style>

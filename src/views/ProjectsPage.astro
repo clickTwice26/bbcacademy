@@ -1,0 +1,141 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
+import SectionHead from '~/components/SectionHead.astro';
+import Icon from '~/components/Icon.astro';
+import { proposedProjects, runningProjects } from '~/data/projects';
+import { t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const runningWithPages = runningProjects.filter((p) => p.detail);
+// Keep the pagoda first as the feature tile.
+runningWithPages.sort((a, b) => (a.slug === 'world-peace-pagoda' ? -1 : b.slug === 'world-peace-pagoda' ? 1 : 0));
+const runningOther = runningProjects.filter((p) => !p.detail);
+---
+
+<BaseLayout lang={lang} title={t(lang, 'projects.metaTitle')} description={t(lang, 'projects.metaDescription')}>
+  <PageHeader
+    lang={lang}
+    title={t(lang, 'projects.title')}
+    lead={t(lang, 'projects.lead')}
+    image="projects/world-peace-pagoda/pagoda-garden.jpg"
+  />
+
+  <section class="section-tight" aria-labelledby="running">
+    <div class="container">
+      <SectionHead id="running" title={t(lang, 'projects.running')} />
+      <div class="running">
+        {
+          runningWithPages.map((project, i) => (
+            <ProjectCard
+              project={project}
+              lang={lang}
+              ratio={i === 0 ? '16 / 10' : '4 / 3'}
+              sizes={i === 0 ? '(min-width: 1000px) 66vw, 92vw' : '(min-width: 1000px) 33vw, (min-width: 640px) 50vw, 92vw'}
+              class:list={['reveal', i === 0 && 'is-feature']}
+              showStatus={false}
+            />
+          ))
+        }
+      </div>
+      <ul class="also" role="list">
+        {
+          runningOther.map((project) => (
+            <li>
+              <span class="also-icon" aria-hidden="true">
+                <Icon name={project.icon} size={24} />
+              </span>
+              <span>
+                <strong>{project.title[lang]}</strong>
+                <span class="small muted">{t(lang, 'status.noPage')}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section band-sand" aria-labelledby="proposed">
+    <div class="container">
+      <SectionHead id="proposed" title={t(lang, 'projects.proposed')} lead={t(lang, 'projects.proposedLead')} />
+      <div class="proposed">
+        {
+          proposedProjects.map((project) => (
+            <ProjectCard project={project} lang={lang} ratio="16 / 9" sizes="(min-width: 800px) 45vw, 92vw" class="reveal" />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .running {
+    display: grid;
+    gap: var(--space-2xl) var(--space-l);
+  }
+  @media (min-width: 640px) {
+    .running {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .running :global(.is-feature) {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1000px) {
+    .running {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .running :global(.is-feature) {
+      grid-column: span 2;
+    }
+    .running :global(.is-feature .project-card-title) {
+      font-size: var(--step-3);
+    }
+  }
+  .also {
+    display: grid;
+    gap: var(--space-m);
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--line);
+  }
+  .also li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+  }
+  .also li > span:last-child {
+    display: grid;
+  }
+  .also-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--sand);
+    color: var(--terracotta);
+  }
+  @media (min-width: 800px) {
+    .also {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .proposed {
+    display: grid;
+    gap: var(--space-2xl) var(--space-l);
+  }
+  @media (min-width: 800px) {
+    .proposed {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

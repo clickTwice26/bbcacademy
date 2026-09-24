@@ -1,0 +1,143 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import LightboxLink from '~/components/LightboxLink.astro';
+import Lightbox from '~/components/Lightbox.astro';
+import { galleryCategories, galleryPhotos } from '~/data/images';
+import { t, type Lang } from '~/i18n/utils';
+import { formatNumber } from '~/lib/format';
+import type { UIKey } from '~/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const counts = Object.fromEntries(galleryCategories.map((c) => [c, galleryPhotos.filter((p) => p.category === c).length]));
+const showing = (n: number) => t(lang, 'gallery.showing', { n: formatNumber(n, lang) });
+---
+
+<BaseLayout lang={lang} title={t(lang, 'gallery.metaTitle')} description={t(lang, 'gallery.metaDescription')}>
+  <PageHeader lang={lang} title={t(lang, 'gallery.title')} lead={t(lang, 'gallery.lead')} />
+
+  <section class="section-tight gallery-section">
+    <div class="container">
+      <div class="filters" role="group" aria-label={t(lang, 'gallery.filter')}>
+        <button type="button" data-filter="all" aria-pressed="true">
+          {t(lang, 'gallery.all')}
+          <span class="count">{formatNumber(galleryPhotos.length, lang)}</span>
+        </button>
+        {
+          galleryCategories.map((cat) => (
+            <button type="button" data-filter={cat} aria-pressed="false">
+              {t(lang, `cat.${cat}` as UIKey)}
+              <span class="count">{formatNumber(counts[cat], lang)}</span>
+            </button>
+          ))
+        }
+      </div>
+      <p class="status small muted" aria-live="polite" data-template={showing(9999)}>{showing(galleryPhotos.length)}</p>
+
+      <ul class="gallery" role="list" data-pswp-gallery>
+        {
+          galleryPhotos.map((p) => (
+            <li data-category={p.category}>
+              <LightboxLink src={p.key} lang={lang} width={420} sizes="(min-width: 1100px) 280px, (min-width: 700px) 33vw, 50vw" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<script>
+  const filters = document.querySelectorAll<HTMLButtonElement>('.filters [data-filter]');
+  const items = document.querySelectorAll<HTMLLIElement>('.gallery li');
+  const status = document.querySelector<HTMLElement>('.gallery-section .status');
+  const template = status?.dataset.template ?? '';
+  const numberFormat = new Intl.NumberFormat(document.documentElement.lang === 'bn' ? 'bn-BD' : 'en-GB');
+
+  filters.forEach((button) => {
+    button.addEventListener('click', () => {
+      const filter = button.dataset.filter;
+      filters.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+      let shown = 0;
+      items.forEach((item) => {
+        const visible = filter === 'all' || item.dataset.category === filter;
+        item.hidden = !visible;
+        // Filtered-out photos are skipped by the lightbox too.
+        item.querySelector('a')?.classList.toggle('is-filtered', !visible);
+        if (visible) shown += 1;
+      });
+      if (status) status.textContent = template.replace(numberFormat.format(9999), numberFormat.format(shown));
+    });
+  });
+</script>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  :global(html:not(.js)) .filters {
+    display: none;
+  }
+  .filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 44px;
+    padding: 0.4rem 0.95rem;
+    border: 1px solid var(--sand-deep);
+    border-radius: var(--r-pill);
+    background: var(--ivory);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: var(--step--1);
+    line-height: 1.3;
+    transition:
+      background-color 0.2s var(--ease),
+      border-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+  .filters button:hover {
+    border-color: var(--terracotta);
+  }
+  .filters button[aria-pressed='true'] {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: var(--ivory);
+  }
+  .count {
+    font-weight: 400;
+    opacity: 0.75;
+  }
+  .status {
+    margin-block: var(--space-m) var(--space-xl);
+  }
+  .gallery {
+    columns: 2 150px;
+    column-gap: var(--space-m);
+  }
+  .gallery li {
+    break-inside: avoid;
+    margin-bottom: var(--space-m);
+  }
+  .gallery li[hidden] {
+    display: none;
+  }
+  @media (min-width: 700px) {
+    .gallery {
+      columns: 3;
+    }
+  }
+  @media (min-width: 1100px) {
+    .gallery {
+      columns: 4;
+    }
+  }
+</style>

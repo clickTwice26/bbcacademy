@@ -1,0 +1,52 @@
+---
+import { site } from '~/config/site';
+import { alternatePath, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Absolute or root-relative URL of the social sharing image. */
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const { lang, title, description, image = '/og-default.jpg', noindex = false, jsonLd } = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+const ogImage = new URL(image, siteUrl).href;
+const isBn = lang === 'bn';
+const hideBn = isBn && !site.bnReviewed;
+const robots = noindex || hideBn ? 'noindex, follow' : 'index, follow';
+const alternates = site.bnReviewed
+  ? [
+      { hreflang: 'en', href: new URL(alternatePath(Astro.url.pathname, 'en'), siteUrl).href },
+      { hreflang: 'bn', href: new URL(alternatePath(Astro.url.pathname, 'bn'), siteUrl).href },
+      { hreflang: 'x-default', href: new URL(alternatePath(Astro.url.pathname, 'en'), siteUrl).href },
+    ]
+  : [];
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robots} />
+{alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
+
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
+<link rel="icon" href="/favicon.png" type="image/png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta name="theme-color" content="#fbf6ee" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.name[lang]} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content={isBn ? 'bn_BD' : 'en_GB'} />
+<meta name="twitter:card" content="summary_large_image" />
+
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

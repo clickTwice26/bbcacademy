@@ -1,0 +1,119 @@
+---
+import Icon from './Icon.astro';
+import { site } from '~/config/site';
+import { t, type Lang } from '~/i18n/utils';
+import { formatPhone } from '~/lib/format';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const socials = [
+  { href: site.socials.facebook, icon: 'facebook-logo', label: 'Facebook' },
+  { href: site.socials.instagram, icon: 'instagram-logo', label: 'Instagram' },
+  { href: site.socials.youtube, icon: 'youtube-logo', label: 'YouTube' },
+].filter((s) => s.href) as { href: string; icon: 'facebook-logo' | 'instagram-logo' | 'youtube-logo'; label: string }[];
+---
+
+<dl class="contact-block">
+  <div class="contact-row">
+    <dt><Icon name="map-pin" size={22} /><span>{t(lang, 'contact.address')}</span></dt>
+    <dd>
+      <address>{site.address[lang].map((line) => <span>{line}</span>)}</address>
+    </dd>
+  </div>
+  <div class="contact-row">
+    <dt><Icon name="phone" size={22} /><span>{t(lang, 'contact.phone')}</span></dt>
+    <dd>
+      {site.phones.map((phone) => <a href={`tel:${phone}`}>{formatPhone(phone, lang)}</a>)}
+    </dd>
+  </div>
+  <div class="contact-row">
+    <dt><Icon name="envelope-simple" size={22} /><span>{t(lang, 'contact.email')}</span></dt>
+    <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+  </div>
+  {
+    site.whatsapp && (
+      <div class="contact-row">
+        <dt>
+          <Icon name="whatsapp-logo" size={22} />
+          <span>{t(lang, 'contact.whatsapp')}</span>
+        </dt>
+        <dd>
+          <a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener">
+            {formatPhone(`+${site.whatsapp}`, lang)}
+          </a>
+        </dd>
+      </div>
+    )
+  }
+  {
+    socials.length > 0 && (
+      <div class="contact-row">
+        <dt>
+          <Icon name="users-three" size={22} />
+          <span>{t(lang, 'contact.follow')}</span>
+        </dt>
+        <dd class="contact-socials">
+          {socials.map((s) => (
+            <a href={s.href} target="_blank" rel="noopener">
+              <Icon name={s.icon} size={20} />
+              {s.label}
+            </a>
+          ))}
+        </dd>
+      </div>
+    )
+  }
+</dl>
+
+<style>
+  .contact-block {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .contact-row {
+    display: grid;
+    gap: 0.35rem;
+  }
+  dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  dt :global(.icon) {
+    color: var(--terracotta);
+  }
+  dd {
+    display: grid;
+    justify-items: start;
+    gap: 0.2rem;
+    margin: 0;
+    padding-left: calc(22px + 0.55rem);
+  }
+  dd a {
+    text-decoration: none;
+    font-size: var(--step-1);
+  }
+  dd a:hover {
+    text-decoration: underline;
+  }
+  address {
+    display: grid;
+    font-style: normal;
+    color: var(--ink-soft);
+  }
+  .contact-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+  }
+  .contact-socials a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+</style>

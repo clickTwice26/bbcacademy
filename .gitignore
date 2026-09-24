@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+.env
+
+# Local-only files, kept out of the public repository
+Introduction.docx
+CONTENT-NOTES.md
+.claude/

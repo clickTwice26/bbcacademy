@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+  lead?: string;
+  id?: string;
+  level?: 2 | 3;
+  class?: string;
+}
+
+const { title, lead, id, level = 2, class: className } = Astro.props;
+const Heading = `h${level}` as 'h2' | 'h3';
+---
+
+<div class:list={['section-head', className]}>
+  <Heading id={id}>{title}</Heading>
+  {lead && <p>{lead}</p>}
+  <slot />
+</div>

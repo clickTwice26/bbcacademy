@@ -1,0 +1,752 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Photo from '~/components/Photo.astro';
+import Prose from '~/components/Prose.astro';
+import Icon from '~/components/Icon.astro';
+import SectionHead from '~/components/SectionHead.astro';
+import { site } from '~/config/site';
+import { getProject, proposedProjects } from '~/data/projects';
+import { sites } from '~/data/heritage';
+import { getPerson } from '~/data/people';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+import { formatNumber, formatYear } from '~/lib/format';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const href = (path: string) => localizePath(path, lang);
+
+const stats = [
+  { value: formatYear(site.founded, lang), label: t(lang, 'home.statFounded') },
+  { value: formatNumber(2.28, lang), label: t(lang, 'home.statLand') },
+  { value: formatNumber(120, lang), label: t(lang, 'home.statChildren') },
+  { value: formatNumber(21, lang), label: t(lang, 'home.statMonasteries') },
+];
+
+const featured = getProject('world-peace-pagoda');
+const running = ['new-salban-vihara', 'monks-training-centre', 'salban-orphanage', 'guest-house'].map(getProject);
+const heritageSites = sites.slice(0, 5);
+const jyotipal = getPerson('jyotipal-mahathero');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'NGO',
+      '@id': `${site.url}/#organization`,
+      name: site.name.en,
+      alternateName: [site.name.bn, site.shortName],
+      url: site.url,
+      logo: `${site.url}/apple-touch-icon.png`,
+      email: site.email,
+      telephone: site.phones,
+      foundingDate: String(site.founded),
+      parentOrganization: { '@type': 'Organization', name: "Young Men's Buddhist Association (YMBA), Cumilla" },
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'New Salban Vihara, Mainamati Museum, P.O. Alahipur, Kotbari',
+        addressLocality: 'Cumilla',
+        postalCode: '3503',
+        addressCountry: 'BD',
+      },
+    },
+    {
+      '@type': 'BuddhistTemple',
+      name: 'New Salban Vihara',
+      alternateName: 'নব শালবন বিহার',
+      containedInPlace: { '@type': 'Place', name: 'Kotbari, Mainamati, Cumilla, Bangladesh' },
+      geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+      isAccessibleForFree: true,
+      publicAccess: true,
+    },
+  ],
+};
+---
+
+<BaseLayout lang={lang} title={t(lang, 'home.metaTitle')} description={t(lang, 'home.metaDescription')} fullTitle jsonLd={jsonLd}>
+  <!-- Hero: split, copy left and an arch-framed collage right -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="hero-eyebrow">{site.name[lang]}</p>
+        <h1>{t(lang, 'home.heroTitle')}</h1>
+        <p class="lead">{t(lang, 'home.heroLead')}</p>
+        <div class="btn-group">
+          <a class="btn btn-primary" href={href('/visit/')}>{t(lang, 'cta.visit')}</a>
+          <a class="btn btn-secondary" href={href('/support/')}>{t(lang, 'cta.support')}</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <Photo
+          src="projects/world-peace-pagoda/pagoda-golden-naga.jpg"
+          lang={lang}
+          shape="arch"
+          ratio="5 / 6"
+          width={449}
+          sizes="(min-width: 900px) 380px, 70vw"
+          priority
+          class="hero-main"
+        />
+        <Photo
+          src="heritage/antiquities/bronze-seated-figure.jpg"
+          lang={lang}
+          ratio="1 / 1"
+          width={220}
+          sizes="180px"
+          position="top"
+          class="hero-inset hero-inset-a"
+        />
+        <Photo
+          src="heritage/sites/salban-vihara-1.jpg"
+          lang={lang}
+          ratio="4 / 3"
+          width={260}
+          sizes="220px"
+          class="hero-inset hero-inset-b"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Numbers band -->
+  <section class="stats band-sand" aria-label={t(lang, 'home.statsLabel')}>
+    <dl class="container stats-grid">
+      {
+        stats.map((s) => (
+          <div class="stat">
+            <dt class="stat-label">{s.label}</dt>
+            <dd class="stat-value">{s.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <!-- Welcome: prose beside a portrait-format photo -->
+  <section class="section welcome">
+    <div class="container welcome-grid">
+      <div class="welcome-copy reveal">
+        <h2>{t(lang, 'home.welcomeTitle')}</h2>
+        <Prose id="home-welcome" lang={lang} class="welcome-prose" />
+        <a class="link-arrow" href={href('/about/')}>
+          {t(lang, 'home.welcomeLink')}
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </div>
+      <Photo
+        src="heritage/sites/salban-vihara-3.jpg"
+        lang={lang}
+        ratio="4 / 5"
+        width={436}
+        sizes="(min-width: 900px) 400px, 90vw"
+        class="welcome-photo reveal"
+      />
+    </div>
+  </section>
+
+  <!-- Running projects: asymmetric bento -->
+  <section class="section-tight projects">
+    <div class="container">
+      <SectionHead title={t(lang, 'home.projectsTitle')} lead={t(lang, 'home.projectsLead')} />
+      <div class="bento">
+        <a class="bento-feature reveal" href={href(`/projects/${featured.slug}/`)}>
+          <Photo
+            src="projects/world-peace-pagoda/pagoda-naga-stairway.jpg"
+            lang={lang}
+            ratio="4 / 5"
+            width={454}
+            sizes="(min-width: 900px) 40vw, 92vw"
+            class="bento-photo"
+          />
+          <div class="bento-body">
+            <h3>{featured.title[lang]}</h3>
+            <p>{featured.summary?.[lang]}</p>
+            <span class="link-arrow">{t(lang, 'common.viewProject')}<Icon name="arrow-right" size={18} /></span>
+          </div>
+        </a>
+        {
+          running.map((project, i) => (
+            <a class="bento-tile reveal" style={`--reveal-i: ${i + 1}`} href={href(`/projects/${project.slug}/`)}>
+              {project.cover && (
+                <Photo src={project.cover} lang={lang} ratio="3 / 2" width={480} sizes="(min-width: 900px) 25vw, 92vw" class="bento-photo" />
+              )}
+              <div class="bento-body">
+                <h3>{project.title[lang]}</h3>
+                <p>{project.summary?.[lang]}</p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+      <p class="projects-more">
+        <a class="link-arrow" href={href('/projects/')}>
+          {t(lang, 'common.allProjects')}
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Heritage: map + quote, then a filmstrip of sites -->
+  <section class="section heritage band-sand">
+    <div class="container heritage-grid">
+      <figure class="heritage-map reveal">
+        <Photo src="heritage/mainamati-lalmai-map.png" lang={lang} shape="none" width={560} sizes="(min-width: 900px) 420px, 90vw" />
+      </figure>
+      <div class="heritage-copy reveal">
+        <h2>{t(lang, 'home.heritageTitle')}</h2>
+        <p class="lead">{t(lang, 'home.heritageLead')}</p>
+        <blockquote class="quote">
+          <p>“{t(lang, 'home.heritageQuote')}”</p>
+          <footer>
+            <cite>{t(lang, 'home.heritageQuoteBy')}</cite>
+            <span>{t(lang, 'home.heritageQuoteContext')}</span>
+          </footer>
+        </blockquote>
+        <a class="btn btn-secondary" href={href('/heritage/')}>{t(lang, 'home.heritageLink')}</a>
+      </div>
+    </div>
+    <div class="container">
+      <ul class="filmstrip" role="list">
+        {
+          heritageSites.map((s) => (
+            <li>
+              <a href={href(`/heritage/#${s.id}`)}>
+                <Photo src={s.photos[0]} lang={lang} ratio="4 / 3" width={320} sizes="(min-width: 900px) 220px, 60vw" />
+                <span>{s.name[lang]}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Tribute: centred, ceremonial -->
+  <section class="section tribute">
+    <div class="container-narrow tribute-inner reveal">
+      <Photo src={jyotipal.portrait} lang={lang} ratio="16 / 11" width={668} sizes="(min-width: 800px) 640px, 92vw" class="tribute-photo" />
+      <p class="tribute-role">{t(lang, 'home.tributeRole')}</p>
+      <h2>{jyotipal.name[lang]}</h2>
+      <p class="tribute-years">{jyotipal.years?.[lang]}</p>
+      <p class="tribute-text">{t(lang, 'home.tributeText')}</p>
+      <a class="link-arrow" href={href(`/people/#${jyotipal.id}`)}>
+        {t(lang, 'home.tributeLink')}
+        <Icon name="arrow-right" size={18} />
+      </a>
+    </div>
+  </section>
+
+  <!-- Proposed: wide render with an overlapping panel -->
+  <section class="section-tight proposed">
+    <div class="container">
+      <div class="proposed-media reveal">
+        <Photo
+          src="projects/shilabhadra-hostel/hostel-render.jpg"
+          lang={lang}
+          ratio="21 / 9"
+          width={1400}
+          sizes="(min-width: 1240px) 1200px, 96vw"
+          caption={t(lang, 'common.proposedDesign')}
+        />
+      </div>
+      <div class="proposed-panel reveal">
+        <h2>{t(lang, 'home.proposedTitle')}</h2>
+        <p>{t(lang, 'home.proposedLead')}</p>
+        <ul role="list" class="proposed-list">
+          {
+            proposedProjects.map((p) => (
+              <li>
+                <a href={href(`/projects/${p.slug}/`)}>
+                  <Icon name={p.icon} size={22} />
+                  <span>{p.title[lang]}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="btn btn-primary" href={href('/support/')}>{t(lang, 'cta.support')}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visit: headline + practical info rows -->
+  <section class="section visit">
+    <div class="container visit-grid">
+      <div class="visit-copy reveal">
+        <h2>{t(lang, 'home.visitTitle')}</h2>
+        <p class="lead">{t(lang, 'home.visitLead')}</p>
+        <div class="btn-group">
+          <a class="btn btn-primary" href={href('/visit/')}>{t(lang, 'cta.visit')}</a>
+          <a class="btn btn-secondary" href={href('/visit/#contact')}>{t(lang, 'cta.contact')}</a>
+        </div>
+      </div>
+      <ul class="visit-list reveal" role="list">
+        <li>
+          <Icon name="bus" size={28} />
+          <p>{t(lang, 'home.visitGetting')}</p>
+        </li>
+        <li>
+          <Icon name="bed" size={28} />
+          <p>{t(lang, 'home.visitStay')}</p>
+        </li>
+        <li>
+          <Icon name="columns" size={28} />
+          <p>{t(lang, 'home.visitNearby')}</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    padding-block: clamp(2.5rem, 1rem + 5vw, 5.5rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+    background:
+      radial-gradient(ellipse 55% 65% at 85% 20%, rgb(216 150 43 / 0.14), transparent 70%),
+      var(--ivory);
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    gap: var(--space-3xl);
+    align-items: center;
+  }
+  .hero-copy {
+    display: grid;
+    gap: var(--space-l);
+    justify-items: start;
+  }
+  .hero-eyebrow {
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--leaf);
+  }
+  :lang(bn) .hero-eyebrow {
+    letter-spacing: 0;
+    font-size: var(--step-0);
+    text-transform: none;
+  }
+  .hero h1 {
+    font-size: var(--step-5);
+    line-height: 1.04;
+    max-width: 12ch;
+  }
+  :lang(bn) .hero h1 {
+    line-height: 1.3;
+    max-width: 14ch;
+  }
+  .hero .lead {
+    max-width: 46ch;
+  }
+  .hero-art {
+    position: relative;
+    width: min(100%, 460px);
+    justify-self: center;
+    padding: 0 var(--space-xl) var(--space-2xl);
+  }
+  .hero-art :global(.hero-main) {
+    width: 100%;
+    box-shadow: var(--shadow-soft);
+    border-radius: var(--r-arch);
+  }
+  .hero-art :global(.hero-inset) {
+    position: absolute;
+    border: 6px solid var(--ivory);
+    border-radius: calc(var(--r-md) + 6px);
+    box-shadow: var(--shadow-soft);
+  }
+  .hero-art :global(.hero-inset-a) {
+    width: 38%;
+    left: -2%;
+    bottom: 0;
+  }
+  .hero-art :global(.hero-inset-b) {
+    width: 44%;
+    right: -4%;
+    top: 12%;
+  }
+  @media (min-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+    .hero-art {
+      justify-self: end;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy > *,
+    .hero-art {
+      animation: rise 0.9s var(--ease) both;
+    }
+    .hero-copy > :nth-child(2) {
+      animation-delay: 0.06s;
+    }
+    .hero-copy > :nth-child(3) {
+      animation-delay: 0.12s;
+    }
+    .hero-copy > :nth-child(4) {
+      animation-delay: 0.18s;
+    }
+    .hero-art {
+      animation-delay: 0.15s;
+    }
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+    }
+  }
+
+  /* ---------- Stats ---------- */
+  .stats {
+    padding-block: var(--space-2xl);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl) var(--space-l);
+  }
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    padding-left: var(--space-m);
+    border-left: 2px solid var(--saffron);
+  }
+  .stat-value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    font-weight: 560;
+    line-height: 1;
+    color: var(--terracotta);
+  }
+  :lang(bn) .stat-value {
+    line-height: 1.2;
+  }
+  .stat-label {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    line-height: 1.4;
+  }
+  @media (min-width: 900px) {
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* ---------- Welcome ---------- */
+  .welcome-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .welcome-copy {
+    display: grid;
+    gap: var(--space-l);
+    justify-items: start;
+  }
+  .welcome-copy h2 {
+    font-size: var(--step-4);
+    max-width: 16ch;
+  }
+  .welcome-grid :global(.welcome-photo) {
+    width: min(100%, 400px);
+    justify-self: center;
+  }
+  @media (min-width: 900px) {
+    .welcome-grid {
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: var(--space-3xl);
+    }
+    .welcome-grid :global(.welcome-photo) {
+      justify-self: end;
+      margin-top: -2rem;
+    }
+  }
+
+  /* ---------- Projects bento ---------- */
+  .bento {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .bento a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .bento-feature,
+  .bento-tile {
+    display: grid;
+    align-content: start;
+    gap: var(--space-m);
+  }
+  .bento-body {
+    display: grid;
+    gap: 0.35rem;
+    justify-items: start;
+  }
+  .bento-body h3 {
+    font-size: var(--step-2);
+    transition: color 0.2s var(--ease);
+  }
+  .bento-body p {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+  .bento-feature .bento-body h3 {
+    font-size: var(--step-3);
+  }
+  .bento-feature .bento-body p {
+    font-size: var(--step-0);
+  }
+  .bento-feature .link-arrow {
+    color: var(--terracotta);
+  }
+  .bento :global(.bento-photo img) {
+    transition: transform 0.7s var(--ease);
+  }
+  .bento a:hover :global(.bento-photo img) {
+    transform: scale(1.04);
+  }
+  .bento a:hover h3 {
+    color: var(--terracotta-deep);
+  }
+  @media (min-width: 640px) {
+    .bento {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .bento-feature {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1000px) {
+    .bento {
+      grid-template-columns: 1.25fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: var(--space-xl) var(--space-l);
+    }
+    .bento-feature {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+  }
+  .projects-more {
+    margin-top: var(--space-2xl);
+  }
+
+  /* ---------- Heritage ---------- */
+  .heritage-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .heritage-map {
+    width: min(100%, 420px);
+    justify-self: center;
+    padding: var(--space-m);
+    background: #fffdf8;
+    border: 1px solid var(--sand-deep);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+    transform: rotate(-1.2deg);
+  }
+  .heritage-copy {
+    display: grid;
+    gap: var(--space-l);
+    justify-items: start;
+  }
+  .quote {
+    margin: var(--space-xs) 0;
+    padding-left: var(--space-l);
+    border-left: 3px solid var(--saffron);
+  }
+  .quote p {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .quote footer {
+    display: grid;
+    margin-top: var(--space-s);
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .quote cite {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  @media (min-width: 900px) {
+    .heritage-grid {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: var(--space-3xl);
+    }
+  }
+  .filmstrip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(60vw, 240px);
+    gap: var(--space-m);
+    margin-top: var(--space-3xl);
+    overflow-x: auto;
+    padding: 0 0 var(--space-s);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .filmstrip li {
+    scroll-snap-align: start;
+  }
+  .filmstrip a {
+    display: grid;
+    gap: var(--space-xs);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .filmstrip a:hover {
+    color: var(--terracotta);
+  }
+  @media (min-width: 1100px) {
+    .filmstrip {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(5, 1fr);
+      overflow: visible;
+    }
+  }
+
+  /* ---------- Tribute ---------- */
+  .tribute-inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-s);
+    text-align: center;
+  }
+  .tribute-inner :global(.tribute-photo) {
+    width: 100%;
+    margin-bottom: var(--space-l);
+  }
+  .tribute-role {
+    color: var(--leaf);
+    font-weight: 600;
+  }
+  .tribute-inner h2 {
+    font-size: var(--step-4);
+    max-width: 20ch;
+  }
+  .tribute-years {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--ink-soft);
+  }
+  .tribute-text {
+    max-width: 58ch;
+    font-size: var(--step-1);
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Proposed ---------- */
+  .proposed-media :global(figcaption) {
+    text-align: right;
+  }
+  .proposed-panel {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+    width: min(100%, 620px);
+    margin-top: var(--space-l);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background: var(--ivory);
+    border: 1px solid var(--sand-deep);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+  }
+  .proposed-panel p {
+    color: var(--ink-soft);
+  }
+  .proposed-list {
+    display: grid;
+    gap: 0.35rem;
+    width: 100%;
+    margin-block: var(--space-xs);
+  }
+  .proposed-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .proposed-list li:last-child a {
+    border-bottom: 0;
+  }
+  .proposed-list a:hover {
+    color: var(--terracotta);
+  }
+  .proposed-list :global(.icon) {
+    flex-shrink: 0;
+    color: var(--terracotta);
+  }
+  @media (min-width: 900px) {
+    .proposed-panel {
+      margin: -7rem 0 0 var(--space-2xl);
+    }
+  }
+
+  /* ---------- Visit ---------- */
+  .visit {
+    border-top: 1px solid var(--line);
+  }
+  .visit-grid {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .visit-copy {
+    display: grid;
+    gap: var(--space-l);
+    justify-items: start;
+    align-content: start;
+  }
+  .visit-copy h2 {
+    font-size: var(--step-4);
+  }
+  .visit-list {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .visit-list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-m);
+    align-items: start;
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid var(--line);
+  }
+  .visit-list li:last-child {
+    border-bottom: 0;
+  }
+  .visit-list :global(.icon) {
+    color: var(--terracotta);
+  }
+  .visit-list p {
+    font-size: var(--step-1);
+  }
+  @media (min-width: 900px) {
+    .visit-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3xl);
+    }
+  }
+</style>

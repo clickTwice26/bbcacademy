@@ -1,0 +1,103 @@
+---
+// Include once on any page that has [data-pswp-gallery] containers of LightboxLink items.
+import 'photoswipe/style.css';
+import { t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div
+  id="pswp-config"
+  hidden
+  data-close={t(lang, 'lightbox.close')}
+  data-zoom={t(lang, 'lightbox.zoom')}
+  data-prev={t(lang, 'lightbox.prev')}
+  data-next={t(lang, 'lightbox.next')}
+  data-error={t(lang, 'lightbox.error')}
+>
+</div>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+
+  const cfg = document.getElementById('pswp-config')?.dataset ?? {};
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-pswp-gallery]').forEach((gallery) => {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery,
+      children: 'a.pswp-item:not(.is-filtered)',
+      pswpModule: () => import('photoswipe'),
+      closeTitle: cfg.close,
+      zoomTitle: cfg.zoom,
+      arrowPrevTitle: cfg.prev,
+      arrowNextTitle: cfg.next,
+      errorMsg: cfg.error,
+      bgOpacity: 0.94,
+      padding: { top: 28, bottom: 72, left: 12, right: 12 },
+      showHideAnimationType: reduceMotion ? 'none' : 'fade',
+    });
+
+    // Caption: the photo's alt text.
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp?.ui?.registerElement({
+        name: 'bbca-caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        onInit: (el, pswp) => {
+          const update = () => {
+            const link = pswp.currSlide?.data.element;
+            const img = link?.querySelector('img');
+            const label = link?.getAttribute('aria-label') ?? '';
+            el.textContent = img?.getAttribute('alt') ?? label.replace(/^[^:]+:\s*/, '');
+          };
+          pswp.on('change', update);
+          update();
+        },
+      });
+    });
+
+    lightbox.init();
+  });
+</script>
+
+<style is:global>
+  .pswp-item {
+    display: block;
+    cursor: zoom-in;
+    color: inherit;
+  }
+  .pswp-item .frame {
+    display: block;
+  }
+  .pswp-item img {
+    transition: transform 0.6s var(--ease);
+  }
+  .pswp-item:hover img {
+    transform: scale(1.035);
+  }
+  .pswp__bbca-caption {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(70ch, calc(100vw - 32px));
+    padding: 6px 14px;
+    border-radius: 10px;
+    background: rgb(20 14 10 / 0.6);
+    color: #f6efe4;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.45;
+    text-align: center;
+  }
+  .pswp__bbca-caption:empty {
+    display: none;
+  }
+</style>

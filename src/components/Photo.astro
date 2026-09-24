@@ -1,0 +1,41 @@
+---
+import { Image } from 'astro:assets';
+import { photo, type PhotoKey } from '~/data/images';
+import type { Lang } from '~/i18n/utils';
+
+interface Props {
+  src: PhotoKey;
+  lang: Lang;
+  /** rect: rounded frame, arch: vihara-arch frame, none: plain image. */
+  shape?: 'rect' | 'arch' | 'none';
+  /** CSS aspect-ratio for the frame, e.g. '4 / 5'. Omit to keep the photo's own shape. */
+  ratio?: string;
+  sizes?: string;
+  /** Largest width the image is shown at (CSS px); never exceeds the source. */
+  width?: number;
+  position?: string;
+  priority?: boolean;
+  caption?: string;
+  class?: string;
+}
+
+const { src, lang, shape = 'rect', ratio, sizes, width, position, priority = false, caption, class: className } = Astro.props;
+const p = photo(src);
+const renderWidth = Math.min(width ?? p.src.width, p.src.width);
+const frame = shape === 'arch' ? 'frame-arch' : shape === 'rect' ? 'frame' : 'frame-none';
+const Wrapper = caption ? 'figure' : 'div';
+---
+
+<Wrapper class:list={['photo', className]}>
+  <div class={frame} style={ratio ? `aspect-ratio: ${ratio}` : undefined}>
+    <Image
+      src={p.src}
+      alt={p.alt[lang]}
+      width={renderWidth}
+      sizes={sizes}
+      position={position}
+      priority={priority}
+    />
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</Wrapper>

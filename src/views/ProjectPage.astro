@@ -1,0 +1,312 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Photo from '~/components/Photo.astro';
+import Prose from '~/components/Prose.astro';
+import Timeline from '~/components/Timeline.astro';
+import Icon from '~/components/Icon.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
+import LightboxLink from '~/components/LightboxLink.astro';
+import Lightbox from '~/components/Lightbox.astro';
+import { photo } from '~/data/images';
+import { detailProjects, type Project } from '~/data/projects';
+import { pagodaTimeline } from '~/data/timeline';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  project: Project;
+}
+
+const { lang, project } = Astro.props;
+const isProposed = project.status === 'proposed';
+const cover = project.cover ? photo(project.cover) : undefined;
+const wideCover = cover ? cover.src.width >= 1200 : false;
+const coverCaption =
+  project.coverNote === 'concept'
+    ? t(lang, 'common.conceptImage')
+    : project.coverNote === 'proposed'
+      ? t(lang, 'common.proposedDesign')
+      : undefined;
+const timeline = project.slug === 'world-peace-pagoda' ? pagodaTimeline : undefined;
+
+// Three other projects, continuing from this one.
+const index = detailProjects.findIndex((p) => p.slug === project.slug);
+const more = [1, 2, 3].map((n) => detailProjects[(index + n) % detailProjects.length]);
+const description = project.summary?.[lang] ?? t(lang, 'projects.metaDescription');
+---
+
+<BaseLayout lang={lang} title={project.title[lang]} description={description}>
+  <section class:list={['project-hero', wideCover && 'is-wide']}>
+    <div class="container project-hero-grid">
+      <div class="project-hero-copy">
+        <a class="back" href={localizePath('/projects/', lang)}>
+          <Icon name="arrow-left" size={18} />
+          {t(lang, 'projects.back')}
+        </a>
+        <span class:list={['badge', isProposed ? 'badge-proposed' : 'badge-running']}>
+          {t(lang, isProposed ? 'status.proposed' : 'status.running')}
+        </span>
+        <h1>{project.title[lang]}</h1>
+        {project.summary && <p class="lead">{project.summary[lang]}</p>}
+      </div>
+      {
+        !wideCover &&
+          (project.cover ? (
+            <Photo
+              src={project.cover}
+              lang={lang}
+              width={560}
+              sizes="(min-width: 900px) 460px, 92vw"
+              priority
+              caption={coverCaption}
+              class="project-cover"
+            />
+          ) : (
+            <div class="project-cover-icon" aria-hidden="true">
+              <Icon name={project.icon} size={88} />
+            </div>
+          ))
+      }
+    </div>
+    {
+      wideCover && project.cover && (
+        <div class="container">
+          <Photo
+            src={project.cover}
+            lang={lang}
+            ratio="16 / 9"
+            width={1400}
+            sizes="(min-width: 1240px) 1200px, 96vw"
+            priority
+            caption={coverCaption}
+            class="project-cover-wide"
+          />
+        </div>
+      )
+    }
+  </section>
+
+  <section class="section-tight">
+    <div class:list={['container', 'project-body', timeline && 'has-aside']}>
+      <Prose collection="projects" id={project.slug} lang={lang} />
+      {
+        timeline && (
+          <aside aria-labelledby="milestones">
+            <h2 id="milestones" class="aside-title">
+              {t(lang, 'projects.timeline')}
+            </h2>
+            <Timeline items={timeline} lang={lang} />
+          </aside>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    project.gallery.length > 0 && (
+      <section class="section-tight band-sand" aria-labelledby="photos">
+        <div class="container">
+          <h2 id="photos" class="photos-title">
+            {t(lang, 'projects.photos')}
+          </h2>
+          <ul class="project-gallery" role="list" data-pswp-gallery>
+            {project.gallery.map((key) => (
+              <li>
+                <LightboxLink src={key} lang={lang} width={480} sizes="(min-width: 1000px) 30vw, (min-width: 640px) 45vw, 92vw" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    isProposed && (
+      <section class="section-tight">
+        <div class="container">
+          <div class="support-panel">
+            <div>
+              <h2>{t(lang, 'projects.supportTitle')}</h2>
+              <p>{t(lang, 'projects.supportText')}</p>
+            </div>
+            <div class="btn-group">
+              <a class="btn btn-primary" href={localizePath('/support/', lang)}>
+                {t(lang, 'cta.support')}
+              </a>
+              <a class="btn btn-secondary" href={localizePath('/visit/#contact', lang)}>
+                {t(lang, 'cta.contact')}
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section-tight more" aria-labelledby="more">
+    <div class="container">
+      <h2 id="more" class="more-title">{t(lang, 'projects.more')}</h2>
+      <div class="more-grid">
+        {more.map((p) => <ProjectCard project={p} lang={lang} ratio="3 / 2" sizes="(min-width: 900px) 30vw, 92vw" />)}
+      </div>
+    </div>
+  </section>
+
+  {project.gallery.length > 0 && <Lightbox lang={lang} />}
+</BaseLayout>
+
+<style>
+  .project-hero {
+    padding-block: clamp(2rem, 1rem + 3vw, 4rem) var(--space-2xl);
+    background:
+      radial-gradient(ellipse 55% 70% at 100% 0%, rgb(216 150 43 / 0.1), transparent 70%),
+      var(--ivory);
+  }
+  .project-hero-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .project-hero-copy {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .project-hero h1 {
+    font-size: var(--step-5);
+    max-width: 20ch;
+  }
+  .project-hero-grid :global(.project-cover) {
+    width: min(100%, 460px);
+    justify-self: center;
+  }
+  .project-cover-icon {
+    display: grid;
+    place-items: center;
+    width: min(100%, 360px);
+    aspect-ratio: 1;
+    justify-self: center;
+    border-radius: var(--r-arch);
+    color: var(--terracotta);
+    background:
+      repeating-radial-gradient(circle at 50% 55%, transparent 0 26px, rgb(154 59 34 / 0.07) 26px 27px),
+      var(--sand);
+  }
+  .is-wide .project-hero-grid {
+    margin-bottom: var(--space-2xl);
+  }
+  @media (min-width: 900px) {
+    .project-hero:not(.is-wide) .project-hero-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    .project-hero-grid :global(.project-cover),
+    .project-cover-icon {
+      justify-self: end;
+    }
+  }
+
+  .project-body {
+    display: grid;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+  .aside-title {
+    margin-bottom: var(--space-l);
+    font-size: var(--step-2);
+  }
+  @media (min-width: 1000px) {
+    .has-aside {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+    .has-aside aside {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-l));
+    }
+  }
+
+  .photos-title,
+  .more-title {
+    margin-bottom: var(--space-xl);
+  }
+  .project-gallery {
+    columns: 1;
+    column-gap: var(--space-m);
+  }
+  .project-gallery li {
+    break-inside: avoid;
+    margin-bottom: var(--space-m);
+  }
+  @media (min-width: 640px) {
+    .project-gallery {
+      columns: 2;
+    }
+  }
+  @media (min-width: 1000px) {
+    .project-gallery {
+      columns: 3;
+    }
+  }
+
+  .support-panel {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    border-radius: var(--r-md);
+    background: var(--terracotta);
+    color: var(--ivory);
+  }
+  .support-panel h2 {
+    color: var(--ivory);
+  }
+  .support-panel p {
+    margin-top: var(--space-xs);
+    max-width: 60ch;
+    color: rgb(251 246 238 / 0.88);
+  }
+  .support-panel .btn-primary {
+    background: var(--ivory);
+    color: var(--terracotta-deep);
+  }
+  .support-panel .btn-primary:hover {
+    background: var(--sand);
+    color: var(--terracotta-deep);
+  }
+  .support-panel .btn-secondary {
+    border-color: rgb(251 246 238 / 0.7);
+    color: var(--ivory);
+  }
+  .support-panel .btn-secondary:hover {
+    background: rgb(251 246 238 / 0.12);
+    color: var(--ivory);
+  }
+  .support-panel :focus-visible {
+    outline-color: var(--ivory);
+  }
+  @media (min-width: 900px) {
+    .support-panel {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  .more {
+    border-top: 1px solid var(--line);
+  }
+  .more-grid {
+    display: grid;
+    gap: var(--space-2xl) var(--space-l);
+  }
+  @media (min-width: 800px) {
+    .more-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

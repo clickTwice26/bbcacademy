@@ -1,0 +1,5 @@
+Mr. Swapan Chandra Singha was born on 1 June 1964 into a respected Buddhist family in the village of Dupchar, Laksam, Cumilla. An engineer by profession, he served for 35 years as General Manager (Electrical Engineering) of the Bangladesh Sugar and Food Industries Corporation (BSFIC) under the Ministry of Industries of the Government of the People's Republic of Bangladesh.
+
+Religious and social values have guided him since boyhood, and he has taken part in the organisation's work alongside his professional career, serving it in various capacities since its founding. Since retiring, he has carried vital responsibilities as Associate Founder and General Secretary of the Bangladesh Buddhist Cultural Academy. He is also the organisation's spokesperson and edits *Shalban*, the souvenir it publishes from time to time. He works with various organisations at home and abroad as a social organiser and humanitarian.
+
+He has travelled several times to South Korea, Myanmar, Thailand, Malaysia, Vietnam and India for professional training, international seminars and religious gatherings, representing the organisation.

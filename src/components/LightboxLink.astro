@@ -1,0 +1,44 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { photo, type PhotoKey } from '~/data/images';
+import { t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  src: PhotoKey;
+  lang: Lang;
+  sizes?: string;
+  /** Largest width the thumbnail is shown at. */
+  width?: number;
+  ratio?: string;
+  position?: string;
+  class?: string;
+  /** Hidden items still belong to the gallery sequence (e.g. extra photos of a site). */
+  hidden?: boolean;
+}
+
+const { src, lang, sizes, width, ratio, position, class: className, hidden = false } = Astro.props;
+const p = photo(src);
+const alt = p.alt[lang];
+// The lightbox shows an optimized copy, never the original upload.
+const large = await getImage({ src: p.src, width: Math.min(p.src.width, 1600), format: 'webp' });
+const largeWidth = Number(large.attributes.width ?? p.src.width);
+const largeHeight = Number(large.attributes.height ?? Math.round((p.src.height * largeWidth) / p.src.width));
+const thumbWidth = Math.min(width ?? p.src.width, p.src.width);
+---
+
+<a
+  class:list={['pswp-item', className]}
+  href={large.src}
+  data-pswp-width={largeWidth}
+  data-pswp-height={largeHeight}
+  aria-label={t(lang, 'common.enlarge', { alt })}
+  hidden={hidden}
+>
+  {
+    !hidden && (
+      <span class="frame" style={ratio ? `aspect-ratio: ${ratio}` : undefined}>
+        <Image src={p.src} alt={alt} width={thumbWidth} sizes={sizes} position={position} />
+      </span>
+    )
+  }
+</a>

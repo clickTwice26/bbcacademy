@@ -1,0 +1,67 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import PersonBio from '~/components/PersonBio.astro';
+import { people } from '~/data/people';
+import { t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const groups = [
+  { id: 'tribute', title: t(lang, 'people.tribute'), members: people.filter((p) => p.group === 'tribute') },
+  { id: 'office-bearers', title: t(lang, 'people.office'), members: people.filter((p) => p.group === 'office') },
+];
+---
+
+<BaseLayout lang={lang} title={t(lang, 'people.metaTitle')} description={t(lang, 'people.metaDescription')}>
+  <PageHeader lang={lang} title={t(lang, 'people.title')} lead={t(lang, 'people.lead')}>
+    <nav class="jump" aria-label={t(lang, 'people.title')}>
+      {groups.map((g) => <a href={`#${g.id}`}>{g.title}</a>)}
+    </nav>
+  </PageHeader>
+
+  {
+    groups.map((group, i) => (
+      <section class:list={['section-tight', 'people-group', i % 2 === 1 && 'band-sand']} aria-labelledby={group.id}>
+        <div class="container">
+          <h2 id={group.id} class="group-title">
+            {group.title}
+          </h2>
+          {group.members.map((person) => (
+            <PersonBio person={person} lang={lang} />
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-s);
+  }
+  .jump a {
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--terracotta);
+    border-radius: var(--r-pill);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .jump a:hover {
+    background: var(--terracotta);
+    color: var(--ivory);
+  }
+  .group-title {
+    padding-bottom: var(--space-l);
+    border-bottom: 2px solid var(--saffron);
+  }
+  .people-group {
+    border-top: 1px solid var(--line);
+  }
+</style>

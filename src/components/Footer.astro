@@ -1,0 +1,246 @@
+---
+import { Image } from 'astro:assets';
+import emblem from '~/assets/images/brand/bbca-emblem.png';
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import { site } from '~/config/site';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+import { formatPhone, formatYear } from '~/lib/format';
+import type { UIKey } from '~/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const otherLang: Lang = lang === 'en' ? 'bn' : 'en';
+
+const links: { key: UIKey; path: string }[] = [
+  { key: 'nav.about', path: '/about/' },
+  { key: 'nav.people', path: '/people/' },
+  { key: 'nav.heritage', path: '/heritage/' },
+  { key: 'nav.projects', path: '/projects/' },
+  { key: 'nav.gallery', path: '/gallery/' },
+  { key: 'nav.visit', path: '/visit/' },
+  { key: 'nav.support', path: '/support/' },
+];
+
+const socials = [
+  { href: site.socials.facebook, icon: 'facebook-logo', label: 'Facebook' },
+  { href: site.socials.instagram, icon: 'instagram-logo', label: 'Instagram' },
+  { href: site.socials.youtube, icon: 'youtube-logo', label: 'YouTube' },
+].filter((s) => s.href) as { href: string; icon: 'facebook-logo' | 'instagram-logo' | 'youtube-logo'; label: string }[];
+
+const year = formatYear(new Date().getFullYear(), lang);
+---
+
+<footer class="site-footer">
+  <div class="brick" aria-hidden="true"></div>
+  <div class="footer-main">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <Image src={emblem} alt="" width={64} layout="fixed" class="footer-emblem" />
+        <p class="footer-name">{site.name[lang]}</p>
+        <p lang={otherLang} class:list={['footer-name-alt', otherLang === 'bn' && 'bn-inline']}>{site.name[otherLang]}</p>
+        <p class="footer-tagline">{t(lang, 'site.tagline')}</p>
+        <p class="footer-parent">{t(lang, 'site.parent')}</p>
+      </div>
+
+      <nav class="footer-col" aria-label={t(lang, 'footer.explore')}>
+        <h2 class="footer-heading">{t(lang, 'footer.explore')}</h2>
+        <ul role="list">
+          {
+            links.map((link) => (
+              <li>
+                <a href={localizePath(link.path, lang)}>{t(lang, link.key)}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">{t(lang, 'footer.contact')}</h2>
+        <address>
+          {site.address[lang].map((line) => <span>{line}</span>)}
+        </address>
+        <ul role="list" class="footer-contact">
+          {
+            site.phones.map((phone) => (
+              <li>
+                <a href={`tel:${phone}`}>
+                  <Icon name="phone" size={17} />
+                  {formatPhone(phone, lang)}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a href={`mailto:${site.email}`}>
+              <Icon name="envelope-simple" size={17} />
+              {site.email}
+            </a>
+          </li>
+          {
+            site.whatsapp && (
+              <li>
+                <a href={`https://wa.me/${site.whatsapp}`} rel="noopener" target="_blank">
+                  <Icon name="whatsapp-logo" size={17} />
+                  {t(lang, 'contact.whatsapp')}
+                </a>
+              </li>
+            )
+          }
+        </ul>
+        {
+          socials.length > 0 && (
+            <ul role="list" class="footer-socials" aria-label={t(lang, 'contact.follow')}>
+              {socials.map((s) => (
+                <li>
+                  <a href={s.href} rel="noopener" target="_blank">
+                    <Icon name={s.icon} size={22} label={s.label} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>{t(lang, 'footer.registration', { reg: site.registration })}</p>
+      <div class="footer-bottom-row">
+        <p>{t(lang, 'footer.copyright', { year })}</p>
+        <LangSwitch lang={lang} class="footer-lang" />
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 0;
+  }
+  /* Courses of brick, as in the walls of Salban Vihara. */
+  .brick {
+    height: 22px;
+    background:
+      repeating-linear-gradient(90deg, var(--terracotta) 0 42px, var(--sand-deep) 42px 45px) 0 0 / 100% 10px no-repeat,
+      repeating-linear-gradient(90deg, var(--terracotta) 0 42px, var(--sand-deep) 42px 45px) 22px 12px / 100% 10px no-repeat,
+      var(--sand-deep);
+    opacity: 0.9;
+  }
+  .footer-main {
+    background: var(--ink);
+    color: var(--sand);
+    padding-block: var(--space-3xl) var(--space-xl);
+  }
+  .footer-grid {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1.4fr 1fr 1.2fr;
+    }
+  }
+  .footer-brand :global(.footer-emblem) {
+    width: 64px;
+    height: auto;
+    margin-bottom: var(--space-m);
+    filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.25));
+  }
+  .footer-name {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 560;
+    line-height: 1.2;
+    color: var(--ivory);
+  }
+  .footer-name-alt {
+    margin-top: 0.3rem;
+    color: var(--saffron);
+    font-size: var(--step-0);
+  }
+  .footer-tagline,
+  .footer-parent {
+    margin-top: var(--space-s);
+    max-width: 40ch;
+    font-size: var(--step--1);
+    color: rgb(243 233 218 / 0.78);
+  }
+  .footer-heading {
+    margin-bottom: var(--space-m);
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--saffron);
+  }
+  :lang(bn) .footer-heading {
+    letter-spacing: 0;
+    font-size: var(--step-0);
+  }
+  .footer-col ul {
+    display: grid;
+    gap: 0.45rem;
+    padding: 0;
+    list-style: none;
+  }
+  .footer-col a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--sand);
+    text-decoration: none;
+  }
+  .footer-col a:hover {
+    color: var(--saffron);
+  }
+  address {
+    display: grid;
+    margin-bottom: var(--space-m);
+    font-style: normal;
+    color: rgb(243 233 218 / 0.85);
+  }
+  .footer-contact :global(.icon) {
+    color: var(--saffron);
+  }
+  .footer-col .footer-socials {
+    display: flex;
+    gap: var(--space-s);
+    margin-top: var(--space-m);
+  }
+  .footer-bottom {
+    display: grid;
+    gap: var(--space-m);
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: 1px solid rgb(243 233 218 / 0.16);
+    font-size: var(--step--1);
+    color: rgb(243 233 218 / 0.7);
+  }
+  .footer-bottom-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+  }
+  .footer-bottom :global(.footer-lang) {
+    color: var(--sand);
+    border-color: rgb(243 233 218 / 0.3);
+  }
+  .footer-bottom :global(.footer-lang:hover) {
+    background: rgb(243 233 218 / 0.08);
+    color: var(--ivory);
+  }
+  .footer-bottom :global(.footer-lang .icon) {
+    color: var(--saffron);
+  }
+  .site-footer :focus-visible {
+    outline-color: var(--saffron);
+  }
+</style>

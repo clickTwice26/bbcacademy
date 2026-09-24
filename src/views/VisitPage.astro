@@ -1,0 +1,258 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Prose from '~/components/Prose.astro';
+import Icon from '~/components/Icon.astro';
+import LightboxLink from '~/components/LightboxLink.astro';
+import Lightbox from '~/components/Lightbox.astro';
+import ContactBlock from '~/components/ContactBlock.astro';
+import MapFacade from '~/components/MapFacade.astro';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+import type { IconName } from '~/lib/icons';
+import type { UIKey } from '~/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const modes: { icon: IconName; title: UIKey; text: UIKey }[] = [
+  { icon: 'bus', title: 'visit.byBus', text: 'visit.byBusText' },
+  { icon: 'train', title: 'visit.byTrain', text: 'visit.byTrainText' },
+  { icon: 'car', title: 'visit.byCar', text: 'visit.byCarText' },
+];
+
+const nearby: { icon: IconName; title: UIKey; text: UIKey }[] = [
+  { icon: 'columns', title: 'visit.nearbySalban', text: 'visit.nearbySalbanText' },
+  { icon: 'bank', title: 'visit.nearbyMuseum', text: 'visit.nearbyMuseumText' },
+  { icon: 'buildings', title: 'visit.nearbyBard', text: 'visit.nearbyBardText' },
+  { icon: 'graduation-cap', title: 'visit.nearbyUniversity', text: 'visit.nearbyUniversityText' },
+];
+---
+
+<BaseLayout lang={lang} title={t(lang, 'visit.metaTitle')} description={t(lang, 'visit.metaDescription')}>
+  <PageHeader
+    lang={lang}
+    title={t(lang, 'visit.title')}
+    lead={t(lang, 'visit.lead')}
+    image="projects/world-peace-pagoda/pagoda-flower-garden.jpg"
+    imageShape="rect"
+    imageRatio="4 / 3"
+  >
+    <div class="btn-group">
+      <a class="btn btn-primary" href="#contact">{t(lang, 'cta.contact')}</a>
+    </div>
+  </PageHeader>
+
+  <section class="section-tight" aria-labelledby="getting-here">
+    <div class="container">
+      <div class="getting">
+        <div>
+          <h2 id="getting-here">{t(lang, 'visit.gettingTitle')}</h2>
+          <p class="lead getting-lead">{t(lang, 'visit.gettingText')}</p>
+        </div>
+        <ul class="modes" role="list">
+          {
+            modes.map((m) => (
+              <li>
+                <Icon name={m.icon} size={30} />
+                <h3>{t(lang, m.title)}</h3>
+                <p>{t(lang, m.text)}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-sand" aria-labelledby="stay">
+    <div class="container stay-grid">
+      <div class="stay-photos" data-pswp-gallery>
+        <LightboxLink src="projects/guest-house/exterior.jpg" lang={lang} ratio="5 / 4" width={513} sizes="(min-width: 900px) 460px, 92vw" class="stay-main" />
+        <LightboxLink src="projects/guest-house/lounge.jpg" lang={lang} ratio="1 / 1" width={300} sizes="(min-width: 900px) 220px, 45vw" />
+        <LightboxLink src="projects/guest-house/reception.jpg" lang={lang} ratio="1 / 1" width={300} sizes="(min-width: 900px) 220px, 45vw" />
+      </div>
+      <div class="stay-copy">
+        <h2 id="stay">{t(lang, 'visit.stayTitle')}</h2>
+        <Prose collection="projects" id="guest-house" lang={lang} />
+        <p class="dorm">
+          <Icon name="bed" size={22} />
+          <span>{t(lang, 'visit.dormitory')}</span>
+        </p>
+        <a class="link-arrow" href={localizePath('/projects/guest-house/', lang)}>
+          {t(lang, 'visit.guestHouseLink')}
+          <Icon name="arrow-right" size={18} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-labelledby="nearby">
+    <div class="container">
+      <h2 id="nearby" class="nearby-title">{t(lang, 'visit.nearbyTitle')}</h2>
+      <ul class="nearby" role="list">
+        {
+          nearby.map((n) => (
+            <li>
+              <span class="nearby-icon" aria-hidden="true">
+                <Icon name={n.icon} size={26} />
+              </span>
+              <div>
+                <h3>{t(lang, n.title)}</h3>
+                <p>{t(lang, n.text)}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section contact band-sand" id="contact" aria-labelledby="contact-title">
+    <div class="container contact-grid">
+      <div class="contact-copy">
+        <h2 id="contact-title">{t(lang, 'visit.contactTitle')}</h2>
+        <p class="lead">{t(lang, 'visit.contactLead')}</p>
+        <ContactBlock lang={lang} />
+      </div>
+      <MapFacade lang={lang} />
+    </div>
+  </section>
+
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<style>
+  .getting {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .getting-lead {
+    margin-top: var(--space-m);
+  }
+  .modes {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .modes li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding-top: var(--space-m);
+    border-top: 2px solid var(--saffron);
+  }
+  .modes :global(.icon) {
+    color: var(--terracotta);
+  }
+  .modes h3 {
+    font-size: var(--step-1);
+  }
+  .modes p {
+    color: var(--ink-soft);
+  }
+  @media (min-width: 900px) {
+    .getting {
+      grid-template-columns: 1fr 1.2fr;
+      gap: var(--space-3xl);
+      align-items: start;
+    }
+    .modes {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .stay-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .stay-photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+  }
+  .stay-photos :global(.stay-main) {
+    grid-column: 1 / -1;
+  }
+  .stay-copy {
+    display: grid;
+    gap: var(--space-l);
+    justify-items: start;
+  }
+  .dorm {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    padding: var(--space-m);
+    border-radius: var(--r-md);
+    background: var(--ivory);
+    border: 1px solid var(--sand-deep);
+  }
+  .dorm :global(.icon) {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    color: var(--terracotta);
+  }
+  @media (min-width: 900px) {
+    .stay-grid {
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: var(--space-3xl);
+    }
+    .stay-photos {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-l));
+    }
+  }
+
+  .nearby-title {
+    margin-bottom: var(--space-xl);
+  }
+  .nearby {
+    display: grid;
+    gap: var(--space-xl) var(--space-2xl);
+  }
+  .nearby li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-m);
+  }
+  .nearby-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--sand);
+    color: var(--terracotta);
+  }
+  .nearby h3 {
+    font-size: var(--step-1);
+  }
+  .nearby p {
+    margin-top: 0.2rem;
+    color: var(--ink-soft);
+  }
+  @media (min-width: 800px) {
+    .nearby {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .contact-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .contact-copy {
+    display: grid;
+    gap: var(--space-l);
+  }
+  @media (min-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3xl);
+    }
+  }
+</style>

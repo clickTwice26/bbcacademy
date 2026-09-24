@@ -1,0 +1,252 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import Prose from '~/components/Prose.astro';
+import SectionHead from '~/components/SectionHead.astro';
+import LightboxLink from '~/components/LightboxLink.astro';
+import Lightbox from '~/components/Lightbox.astro';
+import Icon from '~/components/Icon.astro';
+import { antiquities, mapLegend, sites } from '~/data/heritage';
+import { localizePath, t, type Lang } from '~/i18n/utils';
+import { formatNumber } from '~/lib/format';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<BaseLayout lang={lang} title={t(lang, 'heritage.metaTitle')} description={t(lang, 'heritage.metaDescription')}>
+  <PageHeader
+    lang={lang}
+    title={t(lang, 'heritage.title')}
+    lead={t(lang, 'heritage.lead')}
+    image="heritage/sites/ananda-vihara-1.jpg"
+    imageShape="rect"
+    imageRatio="4 / 3"
+  />
+
+  <section class="section-tight">
+    <div class="container article-grid">
+      <article>
+        <Prose id="heritage-article" lang={lang} class="article-prose" />
+        <p class="source small">{t(lang, 'heritage.source')}</p>
+      </article>
+      <aside class="map-aside" aria-labelledby="map-title">
+        <h2 id="map-title" class="map-title">{t(lang, 'heritage.mapTitle')}</h2>
+        <figure class="map-figure" data-pswp-gallery>
+          <LightboxLink src="heritage/mainamati-lalmai-map.png" lang={lang} width={420} sizes="(min-width: 1000px) 380px, 90vw" />
+          <figcaption>{t(lang, 'heritage.mapCaption')}</figcaption>
+        </figure>
+        <h3 class="legend-title">{t(lang, 'heritage.mapLegend')}</h3>
+        <ol class="legend" role="list">
+          {
+            mapLegend.map((item, i) => (
+              <li>
+                <span class="legend-no">{formatNumber(i + 1, lang)}</span>
+                <span>{item[lang]}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section band-sand" aria-labelledby="sites">
+    <div class="container">
+      <SectionHead id="sites" title={t(lang, 'heritage.sitesTitle')} lead={t(lang, 'heritage.sitesLead')} />
+      <div class="sites">
+        {
+          sites.map((site) => (
+            <article class="site reveal" id={site.id} data-pswp-gallery>
+              <LightboxLink src={site.photos[0]} lang={lang} ratio="4 / 3" width={560} sizes="(min-width: 1000px) 30vw, (min-width: 640px) 45vw, 92vw" />
+              <div class="site-body">
+                <h3>{site.name[lang]}</h3>
+                {site.mapNo && <p class="site-map-no">{t(lang, 'heritage.mapNo', { n: formatNumber(site.mapNo, lang) })}</p>}
+              </div>
+              {site.photos.length > 1 && (
+                <div class="site-thumbs">
+                  {site.photos.slice(1).map((key) => (
+                    <LightboxLink src={key} lang={lang} ratio="1 / 1" width={160} sizes="72px" />
+                  ))}
+                </div>
+              )}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="antiquities">
+    <div class="container">
+      <SectionHead id="antiquities" title={t(lang, 'heritage.antiquitiesTitle')} />
+      <ul class="antiquities" role="list" data-pswp-gallery>
+        {
+          antiquities.map((key) => (
+            <li>
+              <LightboxLink src={key} lang={lang} width={420} sizes="(min-width: 1000px) 25vw, (min-width: 640px) 33vw, 50vw" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="research">
+        <Icon name="magnifying-glass" size={40} />
+        <div>
+          <h2>{t(lang, 'heritage.researchTitle')}</h2>
+          <p>{t(lang, 'heritage.researchText')}</p>
+        </div>
+        <a class="btn btn-secondary" href={localizePath('/projects/research-centre/', lang)}>{t(lang, 'heritage.researchLink')}</a>
+      </div>
+    </div>
+  </section>
+
+  <Lightbox lang={lang} />
+</BaseLayout>
+
+<style>
+  .article-grid {
+    display: grid;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+  .source {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    max-width: var(--measure);
+  }
+  .map-aside {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .map-title {
+    font-size: var(--step-2);
+  }
+  .map-figure {
+    padding: var(--space-m);
+    background: #fffdf8;
+    border: 1px solid var(--sand-deep);
+    border-radius: var(--r-md);
+  }
+  .map-figure :global(.frame) {
+    background: #fff;
+  }
+  .legend-title {
+    font-size: var(--step-1);
+    margin-top: var(--space-s);
+  }
+  .legend {
+    columns: 2;
+    column-gap: var(--space-l);
+    font-size: var(--step--1);
+  }
+  .legend li {
+    display: flex;
+    gap: 0.5rem;
+    break-inside: avoid;
+    padding-block: 0.2rem;
+  }
+  .legend-no {
+    min-width: 1.6em;
+    font-weight: 600;
+    color: var(--terracotta);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (min-width: 1000px) {
+    .article-grid {
+      grid-template-columns: minmax(0, 1fr) 380px;
+    }
+    .map-aside {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-l));
+    }
+  }
+
+  .sites {
+    display: grid;
+    gap: var(--space-2xl) var(--space-l);
+  }
+  .site {
+    display: grid;
+    gap: var(--space-s);
+    align-content: start;
+  }
+  .site-body h3 {
+    font-size: var(--step-2);
+  }
+  .site-map-no {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .site-thumbs {
+    display: flex;
+    gap: var(--space-xs);
+  }
+  .site-thumbs :global(.pswp-item) {
+    width: 72px;
+  }
+  @media (min-width: 640px) {
+    .sites {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1000px) {
+    .sites {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .antiquities {
+    columns: 2 170px;
+    column-gap: var(--space-m);
+  }
+  .antiquities li {
+    break-inside: avoid;
+    margin-bottom: var(--space-m);
+  }
+  @media (min-width: 900px) {
+    .antiquities {
+      columns: 4;
+    }
+  }
+
+  .research {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    border: 1px dashed var(--terracotta);
+    border-radius: var(--r-md);
+    background:
+      radial-gradient(ellipse 50% 80% at 0% 50%, rgb(216 150 43 / 0.12), transparent 70%),
+      var(--ivory);
+  }
+  .research :global(.icon) {
+    color: var(--terracotta);
+  }
+  .research h2 {
+    font-size: var(--step-3);
+  }
+  .research p {
+    margin-top: var(--space-xs);
+    color: var(--ink-soft);
+    max-width: 60ch;
+  }
+  .research .btn {
+    justify-self: start;
+  }
+  @media (min-width: 900px) {
+    .research {
+      grid-template-columns: auto 1fr auto;
+    }
+  }
+</style>

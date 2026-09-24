@@ -1,0 +1,80 @@
+---
+import Photo from './Photo.astro';
+import type { PhotoKey } from '~/data/images';
+import type { Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  lead?: string;
+  image?: PhotoKey;
+  imageShape?: 'rect' | 'arch';
+  imageRatio?: string;
+}
+
+const { lang, title, lead, image, imageShape = 'arch', imageRatio = '4 / 5' } = Astro.props;
+---
+
+<section class:list={['page-header', image && 'has-image']}>
+  <div class="container page-header-grid">
+    <div class="page-header-copy">
+      <slot name="before" />
+      <h1>{title}</h1>
+      {lead && <p class="lead">{lead}</p>}
+      <span class="beads" aria-hidden="true"></span>
+      <slot />
+    </div>
+    {
+      image && (
+        <Photo
+          src={image}
+          lang={lang}
+          shape={imageShape}
+          ratio={imageRatio}
+          width={460}
+          sizes="(min-width: 900px) 420px, 90vw"
+          priority
+          class="page-header-photo"
+        />
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .page-header {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+    background:
+      radial-gradient(ellipse 60% 70% at 100% 0%, rgb(216 150 43 / 0.1), transparent 70%),
+      var(--ivory);
+  }
+  .page-header-grid {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .page-header-copy {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  .page-header h1 {
+    font-size: var(--step-5);
+    max-width: 18ch;
+  }
+  .page-header .beads {
+    margin-top: var(--space-xs);
+  }
+  .page-header :global(.page-header-photo) {
+    width: min(100%, 420px);
+    justify-self: center;
+  }
+  @media (min-width: 900px) {
+    .has-image .page-header-grid {
+      grid-template-columns: 1.25fr 0.75fr;
+    }
+    .page-header :global(.page-header-photo) {
+      justify-self: end;
+    }
+  }
+</style>

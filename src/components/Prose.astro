@@ -1,0 +1,18 @@
+---
+import { renderLocalized, type ProseCollection } from '~/lib/content';
+import type { Lang } from '~/i18n/utils';
+
+interface Props {
+  id: string;
+  lang: Lang;
+  collection?: ProseCollection;
+  class?: string;
+}
+
+const { id, lang, collection = 'pages', class: className } = Astro.props;
+const { Content } = await renderLocalized(collection, lang, id);
+---
+
+<div class:list={['prose', className]}>
+  <Content />
+</div>

@@ -1,0 +1,102 @@
+---
+import Icon from './Icon.astro';
+import { site } from '~/config/site';
+import { t, type Lang } from '~/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { lat, lng } = site.geo;
+const dLat = 0.012;
+const dLng = 0.02;
+const bbox = [lng - dLng, lat - dLat, lng + dLng, lat + dLat].map((n) => n.toFixed(4)).join(',');
+const embed = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
+const directions = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+---
+
+<div class="map">
+  <div class="map-facade" data-map-embed={embed} data-map-title={t(lang, 'map.title')}>
+    <button type="button" class="map-load">
+      <Icon name="map-pin" size={30} />
+      <span class="map-load-label">{t(lang, 'map.load')}</span>
+      <span class="map-load-note">{t(lang, 'map.note')}</span>
+    </button>
+  </div>
+  <a class="link-arrow map-directions" href={directions} target="_blank" rel="noopener">
+    {t(lang, 'map.directions')}
+    <Icon name="arrow-up-right" size={18} />
+  </a>
+</div>
+
+<script>
+  // The map only loads when asked for: no third-party requests on page load.
+  document.querySelectorAll<HTMLElement>('.map-facade').forEach((wrap) => {
+    wrap.querySelector('button')?.addEventListener(
+      'click',
+      () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = wrap.dataset.mapEmbed ?? '';
+        iframe.title = wrap.dataset.mapTitle ?? '';
+        iframe.loading = 'lazy';
+        iframe.referrerPolicy = 'no-referrer-when-downgrade';
+        wrap.replaceChildren(iframe);
+        wrap.classList.add('is-loaded');
+      },
+      { once: true },
+    );
+  });
+</script>
+
+<style>
+  .map {
+    display: grid;
+    gap: var(--space-s);
+  }
+  .map-facade {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    background:
+      repeating-radial-gradient(circle at 62% 55%, transparent 0 26px, rgb(154 59 34 / 0.07) 26px 27px),
+      linear-gradient(135deg, var(--sand), var(--ivory));
+  }
+  .map-facade :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .map-load {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.35rem;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    text-align: center;
+  }
+  .map-load :global(.icon) {
+    color: var(--terracotta);
+    transition: transform 0.3s var(--ease);
+  }
+  .map-load:hover :global(.icon) {
+    transform: translateY(-3px);
+  }
+  .map-load-label {
+    font-weight: 600;
+    color: var(--terracotta);
+  }
+  .map-load-note {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .map-directions {
+    justify-self: start;
+  }
+</style>

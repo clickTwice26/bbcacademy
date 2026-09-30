@@ -52,9 +52,21 @@ button {
 }
 p,
 li,
+h1,
+h2,
+h3,
+h4,
+dd,
 figcaption,
 blockquote {
   overflow-wrap: break-word;
+}
+/* Single-column grids must be allowed to shrink below their widest word, email or button (280px phones). */
+.give-grid,
+.project-hero-grid,
+.research,
+.contact-block {
+  grid-template-columns: minmax(0, 1fr);
 }
 ul[role='list'],
 ol[role='list'] {
@@ -192,6 +204,12 @@ a:hover {
     border-color 0.2s var(--ease),
     transform 0.15s var(--ease);
 }
+@media (max-width: 379px) {
+  .btn {
+    white-space: normal;
+    text-align: center;
+  }
+}
 .btn:active {
   transform: translateY(1px) scale(0.99);
 }
@@ -232,12 +250,20 @@ a:hover {
   transform: translateX(4px);
 }
 
-/* Touch screens: standalone links (arrow links, footer and menu contact links) get a 44px tap area. */
+/* Touch screens: standalone links (arrow and back links, footer, menu, contact and campus-list links) get a 44px tap area. */
 @media (pointer: coarse) {
   .link-arrow,
+  .back,
   .footer-col a,
-  .sheet-contact a {
+  .sheet-contact a,
+  .contact-block dd a,
+  .plot li a {
     min-block-size: 44px;
+  }
+  .contact-block dd a,
+  .plot li a {
+    display: inline-flex;
+    align-items: center;
   }
 }
 

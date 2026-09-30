@@ -184,6 +184,12 @@ const description = project.summary?.[lang] ?? t(lang, 'projects.metaDescription
     font-size: var(--step-5);
     max-width: 20ch;
   }
+  /* Long single words ("Administrative") must fit 280px phones. */
+  @media (max-width: 359px) {
+    .project-hero h1 {
+      font-size: var(--step-4);
+    }
+  }
   .project-hero-grid :global(.project-cover) {
     width: min(100%, 460px);
     justify-self: center;

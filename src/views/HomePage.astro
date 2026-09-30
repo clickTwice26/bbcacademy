@@ -327,6 +327,17 @@ const jsonLd = {
     text-transform: uppercase;
     color: var(--leaf);
   }
+  /* On phones the header already shows the name right above: keep it for screen readers only. */
+  @media (max-width: 767px) {
+    .hero-eyebrow {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+  }
   :lang(bn) .hero-eyebrow {
     letter-spacing: 0;
     font-size: var(--step-0);

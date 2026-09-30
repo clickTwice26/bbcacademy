@@ -232,6 +232,15 @@ a:hover {
   transform: translateX(4px);
 }
 
+/* Touch screens: standalone links (arrow links, footer and menu contact links) get a 44px tap area. */
+@media (pointer: coarse) {
+  .link-arrow,
+  .footer-col a,
+  .sheet-contact a {
+    min-block-size: 44px;
+  }
+}
+
 /* ---------- Images ---------- */
 .frame {
   overflow: hidden;
@@ -354,8 +363,8 @@ figcaption {
     opacity: 0;
     transform: translateY(18px);
     transition:
-      opacity 0.8s var(--ease),
-      transform 0.8s var(--ease);
+      opacity 0.5s var(--ease),
+      transform 0.5s var(--ease);
     transition-delay: calc(var(--reveal-i, 0) * 70ms);
   }
   html.js .reveal.is-visible {

@@ -18,11 +18,12 @@ interface Props {
 const { lang } = Astro.props;
 const href = (path: string) => localizePath(path, lang);
 
+// `count` marks numbers that count up when they scroll into view; the year stays still.
 const stats = [
   { value: formatYear(site.founded, lang), label: t(lang, 'home.statFounded') },
-  { value: formatNumber(2.28, lang), label: t(lang, 'home.statLand') },
-  { value: formatNumber(120, lang), label: t(lang, 'home.statChildren') },
-  { value: formatNumber(21, lang), label: t(lang, 'home.statMonasteries') },
+  { value: formatNumber(2.28, lang), label: t(lang, 'home.statLand'), count: 2.28, decimals: 2 },
+  { value: formatNumber(120, lang), label: t(lang, 'home.statChildren'), count: 120, decimals: 0 },
+  { value: formatNumber(21, lang), label: t(lang, 'home.statMonasteries'), count: 21, decimals: 0 },
 ];
 
 const featured = getProject('world-peace-pagoda');
@@ -114,10 +115,12 @@ const jsonLd = {
   <section class="stats band-sand" aria-label={t(lang, 'home.statsLabel')}>
     <dl class="container stats-grid">
       {
-        stats.map((s) => (
-          <div class="stat">
+        stats.map((s, i) => (
+          <div class="stat reveal" style={`--reveal-i: ${i}`}>
             <dt class="stat-label">{s.label}</dt>
-            <dd class="stat-value">{s.value}</dd>
+            <dd class="stat-value" data-count={s.count} data-decimals={s.decimals}>
+              {s.value}
+            </dd>
           </div>
         ))
       }
@@ -301,6 +304,41 @@ const jsonLd = {
   </section>
 </BaseLayout>
 
+<script>
+  // Stat numbers count up once, when they scroll into view. The markup already holds the final
+  // value, so nothing changes without JavaScript or under reduced motion.
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+  if (counters.length && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const locale = document.documentElement.lang === 'bn' ? 'bn-BD' : 'en-GB';
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+    const run = (el: HTMLElement) => {
+      const end = Number(el.dataset.count);
+      const decimals = Number(el.dataset.decimals ?? 0);
+      const fmt = new Intl.NumberFormat(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+      const final = el.textContent;
+      const start = performance.now();
+      const duration = 1400;
+      const tick = (now: number) => {
+        const t = Math.min((now - start) / duration, 1);
+        el.textContent = t < 1 ? fmt.format(end * easeOut(t)) : final;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          io.unobserve(entry.target);
+          run(entry.target as HTMLElement);
+        }
+      },
+      { threshold: 0.6 },
+    );
+    counters.forEach((el) => io.observe(el));
+  }
+</script>
+
 <style>
   /* ---------- Hero ---------- */
   .hero {
@@ -411,6 +449,82 @@ const jsonLd = {
       from {
         opacity: 0;
         transform: translateY(14px);
+      }
+    }
+
+    /* The arch unveils from its base while the photo settles; the small photos pop in after it. */
+    .hero-art :global(.hero-main .frame-arch) {
+      animation: unveil 1.2s var(--ease) 0.2s both;
+    }
+    .hero-art :global(.hero-main img) {
+      animation: settle 1.8s var(--ease) 0.2s both;
+    }
+    .hero-art :global(.hero-inset) {
+      animation: pop 0.8s var(--ease) both;
+    }
+    .hero-art :global(.hero-inset-b) {
+      animation-delay: 0.75s;
+    }
+    .hero-art :global(.hero-inset-a) {
+      animation-delay: 0.95s;
+    }
+    @keyframes unveil {
+      from {
+        clip-path: inset(100% 0 0 0);
+      }
+      to {
+        clip-path: inset(0);
+      }
+    }
+    @keyframes settle {
+      from {
+        scale: 1.14;
+      }
+    }
+    @keyframes pop {
+      from {
+        opacity: 0;
+        scale: 0.86;
+      }
+    }
+
+    /* Depth on scroll (user-driven, so no autoplay motion): the photos drift at different speeds. */
+    @supports (animation-timeline: scroll()) {
+      .hero-art :global(.hero-main) {
+        animation: drift-slow linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 640px;
+      }
+      .hero-art :global(.hero-inset-a),
+      .hero-art :global(.hero-inset-b) {
+        animation-duration: 0.8s, auto;
+        animation-timing-function: var(--ease), linear;
+        animation-fill-mode: both;
+        animation-timeline: auto, scroll(root block);
+        animation-range: normal, 0 640px;
+      }
+      .hero-art :global(.hero-inset-b) {
+        animation-name: pop, drift-fast;
+        animation-delay: 0.75s, 0s;
+      }
+      .hero-art :global(.hero-inset-a) {
+        animation-name: pop, drift-mid;
+        animation-delay: 0.95s, 0s;
+      }
+      @keyframes drift-slow {
+        to {
+          translate: 0 28px;
+        }
+      }
+      @keyframes drift-mid {
+        to {
+          translate: 0 -34px;
+        }
+      }
+      @keyframes drift-fast {
+        to {
+          translate: 0 -62px;
+        }
       }
     }
   }

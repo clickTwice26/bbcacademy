@@ -1,4 +1,4 @@
-Training centres for novices and monks play a vital role in teaching sound religious precepts, ethical living and Buddhist philosophy. Our centre focuses on these areas:
+Training centres for novices and monks play a vital role in teaching sound religious precepts, ethical living and Buddhist philosophy. Our centre works with newly ordained novice monks, aiming to shape a monastic life grounded in the Buddha's noble ideals of sila (precepts), samadhi (meditation) and prajna (wisdom). It focuses on these areas:
 
 - **Vinaya and discipline.** Training in strict observance of the Vinaya rules and the Kathina Civara (robe-offering) traditions established by the Buddha, building a disciplined way of life.
 - **Religious and scriptural knowledge.** Opportunities for proper study of, and research into, the Tripitaka and Buddhist philosophy.

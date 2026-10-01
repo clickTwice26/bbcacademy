@@ -151,10 +151,19 @@ export const projects: Project[] = [
     slug: 'kindergarten-school',
     status: 'running',
     plot: 1,
-    detail: false,
-    gallery: [],
+    detail: true,
+    cover: 'projects/kindergarten-school/pupils-outside-school.jpg',
+    gallery: [
+      'projects/kindergarten-school/pupils-outside-school.jpg',
+      'projects/kindergarten-school/pupils-with-monk-and-teachers.jpg',
+      'projects/kindergarten-school/pupils-by-mural.jpg',
+    ],
     icon: 'baby',
-    title: { en: 'Kindergarten School', bn: 'কিন্ডারগার্টেন স্কুল' },
+    title: { en: 'Salban Kindergarten', bn: 'শালবন কিন্ডারগার্টেন' },
+    summary: {
+      en: "A first step in schooling for the orphanage's youngest children and for destitute children of the neighbourhood.",
+      bn: 'অনাথালয়ের ছোট শিশু এবং আশপাশের দুস্থ শিশুদের জন্য শিক্ষাজীবনের প্রথম ধাপ।',
+    },
   },
   {
     slug: 'shilabhadra-hostel',

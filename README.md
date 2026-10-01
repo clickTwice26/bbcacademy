@@ -2,7 +2,7 @@
 
 A bilingual website (English and বাংলা) for the Bangladesh Buddhist Cultural Academy (BBCA), a master project of YMBA Cumilla beside the 8th-century Salban Vihara at Kotbari, Mainamati. It is built with [Astro](https://astro.build) as a static site: the output is plain HTML, CSS and images that can be hosted anywhere.
 
-All text and photos come from the Academy's profile document, `Introduction.docx`. That document and `CONTENT-NOTES.md` (open questions for the Academy) are kept locally and are not part of this repository.
+All text and photos come from the Academy's profile documents, `Introduction.docx` and its later revision `FOLDER 2.docx`. Those documents and `CONTENT-NOTES.md` (open questions for the Academy) are kept locally and are not part of this repository.
 
 ## Run it
 
@@ -59,7 +59,7 @@ Files in `src/pages/` are thin wrappers that pass `lang="en"` or `lang="bn"` to 
 ### Social links, WhatsApp and donations
 
 - In `src/config/site.ts`, fill in `socials.facebook` (and the others) with full URLs and `whatsapp` with the number in international format without "+", for example `8801815273516`. Empty values stay hidden.
-- To show bank or mobile-banking details on the Support page, fill in `donation`. Receiving donations from abroad requires registration with Bangladesh's NGO Affairs Bureau, so confirm that first.
+- The Support page shows the Academy's bank account from `donation.bank` in `src/config/site.ts`. To add mobile-banking numbers, fill in `donation.mobile`; set `donation` to `null` to hide the whole block. Receiving donations from abroad requires registration with Bangladesh's NGO Affairs Bureau, so confirm that before launch.
 
 ### Publishing the Bangla pages
 
@@ -69,14 +69,14 @@ Files in `src/pages/` are thin wrappers that pass `lang="en"` or `lang="bn"` to 
 ## Photos
 
 - **Where they live:** photos are in `src/assets/images/`, one folder per section. Astro makes resized WebP versions at build time and never enlarges a photo beyond its original size.
-- **How they were made:** they were extracted from the Word document by `scripts/extract_docx_assets.py`, following `scripts/image_manifest.json`. The script:
+- **How they were made:** they were extracted from the Word documents by `scripts/extract_docx_assets.py`, following `scripts/image_manifest.json` (most photos come from `Introduction.docx`; the Salban Kindergarten photos come from `FOLDER 2.docx`). The script:
   - renames each image and removes duplicates
   - leaves out watermarked stock images
   - converts the CMYK and EMF images
   - crops camera date stamps and trims letterbox bars
   - cuts the emblem out of the letterhead
   - makes the favicons and the social-sharing image `public/og-default.jpg`
-- **Re-running the script:** it needs `Introduction.docx` at the repository root (not committed) and Python 3 with Pillow:
+- **Re-running the script:** it needs `Introduction.docx` at the repository root (not committed) and Python 3 with Pillow. The kindergarten photos need `FOLDER 2.docx` as well; without it they are skipped and the committed copies stay as they are (`--folder2-only` extracts just those):
 
   ```bash
   npm run assets

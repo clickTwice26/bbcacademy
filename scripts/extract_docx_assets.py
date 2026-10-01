@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Extract, clean and rename the images embedded in Introduction.docx.
+"""Extract, clean and rename the images embedded in Introduction.docx (and the new ones in FOLDER 2.docx).
 
 This is a one-time, reproducible asset step. Its outputs (src/assets/images/**,
 public/favicon*, public/apple-touch-icon.png, public/og-default.jpg) are
 committed, so building the website never needs Python.
 
     python3 scripts/extract_docx_assets.py [--sheet /tmp/contact-sheet.jpg]
+    python3 scripts/extract_docx_assets.py --folder2-only    # just the photos from FOLDER 2.docx
 
 To use a higher-resolution original instead, replace the file under
 src/assets/images/ with the same name; the site picks it up on the next build.
@@ -24,6 +25,7 @@ from PIL import Image, ImageCms, ImageDraw, ImageFont, ImageOps, ImageStat
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCX = ROOT / "Introduction.docx"
+DOCX2 = ROOT / "FOLDER 2.docx"
 MANIFEST = ROOT / "scripts" / "image_manifest.json"
 OUT = ROOT / "src" / "assets" / "images"
 PUBLIC = ROOT / "public"
@@ -244,12 +246,38 @@ def contact_sheet(paths: list[Path], dest: Path) -> None:
     sheet.save(dest, quality=85)
 
 
+def extract_folder2(manifest: dict) -> list[Path]:
+    """Photos that only appear in FOLDER 2.docx (listed in the manifest as images_folder2)."""
+    entries = manifest.get("images_folder2", [])
+    if not entries:
+        return []
+    if not DOCX2.exists():
+        print(f"skipped {len(entries)} photo(s): {DOCX2.name} is not at the repository root (outputs already committed)")
+        return []
+    with zipfile.ZipFile(DOCX2) as z:
+        media = read_media(z)
+    written = []
+    for entry in entries:
+        ext, raw = media[entry["src"]]
+        original, im = process(entry, ext, raw)
+        dest = OUT / entry["out"]
+        save(im, dest, original)
+        written.append(dest)
+        print(f"folder2 image{entry['src']:<3} -> {dest.relative_to(ROOT)}  {im.width}x{im.height}{'' if original is None else '  (copied)'}")
+    return written
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sheet", type=Path, help="write a contact sheet of all outputs to this path")
+    ap.add_argument("--folder2-only", action="store_true", help="only extract the photos taken from FOLDER 2.docx")
     args = ap.parse_args()
 
     manifest = json.loads(MANIFEST.read_text())
+    if args.folder2_only:
+        if not extract_folder2(manifest):
+            raise SystemExit(f"Nothing extracted: put {DOCX2.name} at the repository root")
+        return
     with zipfile.ZipFile(DOCX) as z:
         media = read_media(z)
 
@@ -286,6 +314,7 @@ def main() -> None:
     pagoda = Image.open(OUT / "projects/world-peace-pagoda/pagoda-golden-naga.jpg")
     build_og(emblem, pagoda, PUBLIC / "og-default.jpg")
     written += [PUBLIC / "favicon.png", PUBLIC / "apple-touch-icon.png", PUBLIC / "og-default.jpg"]
+    written += extract_folder2(manifest)
     print("public   -> favicon.png, favicon.ico, apple-touch-icon.png, og-default.jpg")
 
     if args.sheet:

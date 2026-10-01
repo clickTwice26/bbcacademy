@@ -44,9 +44,30 @@ export const site = {
   /** WhatsApp number in international format without '+', e.g. '8801815273516'. Empty hides it. */
   whatsapp: '',
 
-  /** Bank / mobile-banking details for donations. Null hides the block on the Support page. */
-  donation: null as null | {
-    bank?: { accountName: string; accountNumber: string; bankName: string; branch: string; routing?: string; swift?: string };
+  /** Bank / mobile-banking details for donations. Null hides the block on the Support page.
+   *  The bank account is the one printed in the Academy's profile ("FOLDER 2.docx", Source of funding). */
+  donation: {
+    bank: {
+      accountName: 'Bangladesh Buddhist Cultural Academy',
+      accountType: { en: 'Savings', bn: 'সঞ্চয়ী' },
+      accountNumber: '01 00 28 01 53 430',
+      bankName: 'Janata Bank PLC',
+      branch: 'Cumilla Cadet College Branch',
+      branchCode: '00 839',
+      routing: '13 51 91 189',
+      swift: 'JANBBDDH',
+    },
+  } as null | {
+    bank?: {
+      accountName: string;
+      accountType?: { en: string; bn: string };
+      accountNumber: string;
+      bankName: string;
+      branch: string;
+      branchCode?: string;
+      routing?: string;
+      swift?: string;
+    };
     mobile?: { service: string; number: string }[];
   },
 } as const;

@@ -78,33 +78,54 @@ const donation = site.donation;
     <div class="container give-grid">
       <div class="give-copy">
         <h2 id="give-title">{t(lang, 'support.giveTitle')}</h2>
-        <p class="lead">{t(lang, 'support.giveText')}</p>
+        <p class="lead">{t(lang, donation?.bank ? 'support.giveTextBank' : 'support.giveText')}</p>
         {
           donation?.bank && (
             <div class="donation">
               <h3>{t(lang, 'support.bankTitle')}</h3>
+              {/* Bank details stay in Latin digits on both languages, so they can be copied into a banking app. */}
               <dl>
                 <dt>{t(lang, 'support.accountName')}</dt>
-                <dd>{donation.bank.accountName}</dd>
+                <dd lang="en">{donation.bank.accountName}</dd>
+                {donation.bank.accountType && (
+                  <>
+                    <dt>{t(lang, 'support.accountType')}</dt>
+                    <dd>{donation.bank.accountType[lang]}</dd>
+                  </>
+                )}
                 <dt>{t(lang, 'support.accountNumber')}</dt>
-                <dd>{digits(donation.bank.accountNumber, lang)}</dd>
+                <dd lang="en" class="num">{donation.bank.accountNumber}</dd>
                 <dt>{t(lang, 'support.bank')}</dt>
-                <dd>
+                <dd lang="en">
                   {donation.bank.bankName}, {donation.bank.branch}
                 </dd>
+                {donation.bank.branchCode && (
+                  <>
+                    <dt>{t(lang, 'support.branchCode')}</dt>
+                    <dd lang="en" class="num">{donation.bank.branchCode}</dd>
+                  </>
+                )}
                 {donation.bank.routing && (
                   <>
                     <dt>{t(lang, 'support.routing')}</dt>
-                    <dd>{donation.bank.routing}</dd>
+                    <dd lang="en" class="num">{donation.bank.routing}</dd>
                   </>
                 )}
                 {donation.bank.swift && (
                   <>
                     <dt>{t(lang, 'support.swift')}</dt>
-                    <dd>{donation.bank.swift}</dd>
+                    <dd lang="en" class="num">{donation.bank.swift}</dd>
                   </>
                 )}
               </dl>
+            </div>
+          )
+        }
+        {
+          donation?.bank && (
+            <div class="funding">
+              <h3>{t(lang, 'support.fundingTitle')}</h3>
+              <p>{t(lang, 'support.fundingText')}</p>
             </div>
           )
         }
@@ -226,6 +247,16 @@ const donation = site.donation;
   .donation dd {
     margin: 0;
     font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .donation dd.num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+  .funding p {
+    margin-top: var(--space-xs);
+    color: var(--ink-soft);
+    max-width: 60ch;
   }
   .give-contact {
     padding: var(--space-xl);

@@ -24,8 +24,8 @@ export const academyTimeline: Milestone[] = [
   {
     date: '1994-12',
     text: {
-      en: 'The foundation stone of the Bangladesh Buddhist Cultural Academy is laid.',
-      bn: 'বাংলাদেশ বুদ্ধিষ্ট কালচারাল একাডেমীর ভিত্তিপ্রস্তর স্থাপন করা হয়।',
+      en: 'Lt Col (Retd.) Akbar Hossain, Bir Protik, lays the foundation stone of the Bangladesh Buddhist Cultural Academy.',
+      bn: 'লেফটেন্যান্ট কর্নেল (অব.) আকবর হোসেন, বীর প্রতীক বাংলাদেশ বুদ্ধিষ্ট কালচারাল একাডেমীর ভিত্তিপ্রস্তর স্থাপন করেন।',
     },
   },
   {
@@ -104,8 +104,8 @@ export const pagodaTimeline: Milestone[] = [
   {
     date: '2017-10-21',
     text: {
-      en: 'The pagoda is officially inaugurated.',
-      bn: 'প্যাগোডার আনুষ্ঠানিক উদ্বোধন হয়।',
+      en: 'The pagoda is officially inaugurated in the presence of the then Finance Minister.',
+      bn: 'তৎকালীন অর্থমন্ত্রীর উপস্থিতিতে প্যাগোডার আনুষ্ঠানিক উদ্বোধন হয়।',
     },
   },
 ];

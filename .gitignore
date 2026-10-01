@@ -6,6 +6,6 @@ dist/
 .env
 
 # Local-only files, kept out of the public repository
-Introduction.docx
+*.docx
 CONTENT-NOTES.md
 .claude/

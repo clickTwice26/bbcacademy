@@ -326,6 +326,20 @@ const alt = {
     bn: 'প্যাগোডার সামনে নতুন বই হাতে শিশুরা',
   },
 
+  // Kindergarten
+  'projects/kindergarten-school/pupils-outside-school.jpg': {
+    en: 'Kindergarten pupils standing with teachers and staff outside the school, in front of its painted wall',
+    bn: 'রঙিন দেয়ালচিত্রের সামনে বিদ্যালয়ের বাইরে শিক্ষক ও কর্মীদের সঙ্গে কিন্ডারগার্টেনের শিশুরা',
+  },
+  'projects/kindergarten-school/pupils-with-monk-and-teachers.jpg': {
+    en: 'A monk, teachers and a large group of pupils posing together in the school yard',
+    bn: 'বিদ্যালয়ের উঠানে একজন ভিক্ষু, শিক্ষকবৃন্দ ও শিশুদের বড় দলের সম্মিলিত ছবি',
+  },
+  'projects/kindergarten-school/pupils-by-mural.jpg': {
+    en: 'Close-up of pupils standing in front of the painted school mural',
+    bn: 'বিদ্যালয়ের দেয়ালচিত্রের সামনে দাঁড়ানো শিশুদের কাছ থেকে তোলা ছবি',
+  },
+
   // Guest house
   'projects/guest-house/exterior.jpg': {
     en: 'The two-storey Salban Vihara Guest House with a Thai-style gabled entrance',
@@ -364,6 +378,7 @@ export type GalleryCategory =
   | 'pagoda'
   | 'training'
   | 'orphanage'
+  | 'kindergarten'
   | 'guesthouse'
   | 'publications';
 
@@ -374,6 +389,7 @@ export const galleryCategories: GalleryCategory[] = [
   'pagoda',
   'training',
   'orphanage',
+  'kindergarten',
   'guesthouse',
   'publications',
 ];
@@ -385,6 +401,7 @@ const categoryByFolder: Record<string, GalleryCategory> = {
   'projects/world-peace-pagoda/': 'pagoda',
   'projects/monks-training-centre/': 'training',
   'projects/salban-orphanage/': 'orphanage',
+  'projects/kindergarten-school/': 'kindergarten',
   'projects/guest-house/': 'guesthouse',
   'publications/': 'publications',
 };

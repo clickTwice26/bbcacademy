@@ -16,10 +16,10 @@ export const aims: Aim[] = [
     },
   },
   {
-    icon: 'toolbox',
+    icon: 'flower-lotus',
     text: {
-      en: 'Creating self-employment by giving technical and vocational education to young people held back by poverty and lack of opportunity.',
-      bn: 'শিক্ষা, সংস্কৃতি ও আর্থসামাজিকভাবে পিছিয়ে পড়া তরুণদের কারিগরি ও বৃত্তিমূলক শিক্ষা দিয়ে আত্মকর্মসংস্থানের সুযোগ সৃষ্টি করা।',
+      en: "Running a Monks' Training Centre that shapes newly ordained novices in the Buddha's ideals of sila (precepts), samadhi (meditation) and prajna (wisdom).",
+      bn: 'নবদীক্ষিত শ্রামণদের জন্য ভিক্ষু প্রশিক্ষণ কেন্দ্র পরিচালনা করা, যেখানে বুদ্ধের শীল, সমাধি ও প্রজ্ঞার আদর্শে তাঁদের ভিক্ষুজীবন গড়ে ওঠে।',
     },
   },
   {
@@ -30,17 +30,31 @@ export const aims: Aim[] = [
     },
   },
   {
+    icon: 'book-open-text',
+    text: {
+      en: 'Promoting knowledge of Theravada Buddhism, and meditation and relaxation techniques, among novices and monks through the Bhikkhu Training Centre.',
+      bn: 'ভিক্ষু প্রশিক্ষণ কেন্দ্রের মাধ্যমে শ্রামণ ও ভিক্ষুদের মধ্যে থেরবাদ বৌদ্ধধর্মের জ্ঞান এবং ধ্যান ও মানসিক প্রশান্তির কৌশল ছড়িয়ে দেওয়া।',
+    },
+  },
+  {
+    icon: 'toolbox',
+    text: {
+      en: 'Creating self-employment by giving technical and vocational education to young people held back by poverty and lack of opportunity.',
+      bn: 'শিক্ষা, সংস্কৃতি ও আর্থসামাজিকভাবে পিছিয়ে পড়া তরুণদের কারিগরি ও বৃত্তিমূলক শিক্ষা দিয়ে আত্মকর্মসংস্থানের সুযোগ সৃষ্টি করা।',
+    },
+  },
+  {
+    icon: 'users-three',
+    text: {
+      en: 'Organising seminars on the development of Theravada Buddhism, in Bangladesh and abroad.',
+      bn: 'দেশে ও বিদেশে থেরবাদ বৌদ্ধধর্মের উন্নয়নে সেমিনারের আয়োজন করা।',
+    },
+  },
+  {
     icon: 'baby',
     text: {
       en: 'Providing health, education and care for neglected, poor, destitute and orphaned children.',
       bn: 'সমাজের অবহেলিত, দরিদ্র, দুস্থ ও অনাথ শিশুদের স্বাস্থ্য, শিক্ষা ও ভরণপোষণের ব্যবস্থা করা।',
-    },
-  },
-  {
-    icon: 'flower-lotus',
-    text: {
-      en: "Running a Monks' Training Centre that shapes newly ordained novices in the Buddha's ideals of sila (precepts), samadhi (meditation) and prajna (wisdom).",
-      bn: 'নবদীক্ষিত শ্রামণদের জন্য ভিক্ষু প্রশিক্ষণ কেন্দ্র পরিচালনা করা, যেখানে বুদ্ধের শীল, সমাধি ও প্রজ্ঞার আদর্শে তাঁদের ভিক্ষুজীবন গড়ে ওঠে।',
     },
   },
   {

@@ -56,7 +56,7 @@ export const people: Person[] = [
     id: 'dhira-sen-singha',
     group: 'tribute',
     portrait: 'people/dhira-sen-singha.jpg',
-    name: { en: 'Mr. Dhira Sen Singha (Gandhi)', bn: 'ধীরসেন সিংহ (গান্ধী)' },
+    name: { en: 'Advocate Dhira Sen Singha (Gandhi)', bn: 'অ্যাডভোকেট ধীরসেন সিংহ (গান্ধী)' },
     role: {
       en: 'Founder President of YMBA and the Bangladesh Buddhist Cultural Academy',
       bn: 'ওয়াইএমবিএ ও বাংলাদেশ বুদ্ধিষ্ট কালচারাল একাডেমীর প্রতিষ্ঠাতা সভাপতি',
